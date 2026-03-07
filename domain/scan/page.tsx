@@ -8,6 +8,7 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Progress } from "@/shared/ui/progress";
 import { Separator } from "@/shared/ui/separator";
+import { Skeleton } from "@/shared/ui/skeleton";
 import {
   loadEnrichmentData,
   loadManifest,
@@ -62,6 +63,44 @@ function matchTypeLabel(type: "exact3" | "partial2" | "category_fit") {
   return "카테고리 적합";
 }
 
+function matchTone(type: "exact3" | "partial2" | "category_fit") {
+  if (type === "exact3") {
+    return {
+      cardClass:
+        "border-emerald-300/50 bg-[linear-gradient(140deg,rgba(20,80,60,0.45),rgba(8,18,34,0.75))] shadow-[0_0_0_1px_rgba(74,222,128,0.25),0_0_30px_rgba(52,211,153,0.24)]",
+      badgeClass: "border-emerald-300/55 bg-emerald-300/15 text-emerald-100",
+    };
+  }
+  if (type === "partial2") {
+    return {
+      cardClass:
+        "border-amber-300/45 bg-[linear-gradient(140deg,rgba(72,52,18,0.45),rgba(8,18,34,0.75))] shadow-[0_0_0_1px_rgba(252,211,77,0.2),0_0_24px_rgba(245,158,11,0.2)]",
+      badgeClass: "border-amber-300/55 bg-amber-300/15 text-amber-100",
+    };
+  }
+  return {
+    cardClass: "border-border/70 bg-background/45",
+    badgeClass: "border-border/60 bg-muted/30 text-muted-foreground",
+  };
+}
+
+function rarityTone(rarity: number) {
+  if (rarity >= 6) {
+    return {
+      badgeClass:
+        "border-[#FF7100] bg-[rgba(255,113,0,0.18)] text-[#FFD9BF] shadow-[0_0_18px_rgba(255,113,0,0.45)]",
+      frameClass: "border-[#FF7100] shadow-[0_0_26px_rgba(255,113,0,0.35)]",
+      glowAsset: "/images/weapons/weapon_rarity_6.png",
+    };
+  }
+  return {
+    badgeClass:
+      "border-[#FFBB03] bg-[rgba(255,187,3,0.18)] text-[#FFE8A3] shadow-[0_0_16px_rgba(255,187,3,0.4)]",
+    frameClass: "border-[#FFBB03] shadow-[0_0_20px_rgba(255,187,3,0.28)]",
+    glowAsset: "/images/weapons/weapon_rarity_5.png",
+  };
+}
+
 function getLineDisplayText(
   line: ScannedTraitLine,
   optionsById: Map<string, Option>,
@@ -91,6 +130,7 @@ export default function ScanPage() {
     [boolean, boolean, boolean]
   >([false, false, false]);
   const [isOcrRunning, setIsOcrRunning] = useState(false);
+  const [isMatchLoading, setIsMatchLoading] = useState(false);
   const [matchView, setMatchView] = useState<"atLeast3" | "atLeast2">(
     "atLeast2",
   );
@@ -104,6 +144,7 @@ export default function ScanPage() {
   >(null);
   const lastAutoOcrAtRef = useRef(0);
   const lastAutoSignatureRef = useRef<string | null>(null);
+  const latestCaptureSignatureRef = useRef<string | null>(null);
   const lastCommittedLinesRef =
     useRef<[ScannedTraitLine, ScannedTraitLine, ScannedTraitLine]>(
       blankLines(),
@@ -173,10 +214,11 @@ export default function ScanPage() {
         HTMLCanvasElement,
       ],
       targetIndexes?: number[],
+      expectedSignature?: string,
     ) => {
       if (!data) {
         setStatus("데이터가 아직 로드되지 않았습니다.");
-        return;
+        return false;
       }
 
       latestLineCanvasesRef.current = targetLineCanvases;
@@ -251,6 +293,12 @@ export default function ScanPage() {
         ScannedTraitLine,
         ScannedTraitLine,
       ];
+      if (
+        expectedSignature &&
+        expectedSignature !== latestCaptureSignatureRef.current
+      ) {
+        return false;
+      }
       lastCommittedLinesRef.current = typedLines;
       setLines(typedLines);
       setLineNeedsRetry(nextRetry);
@@ -264,11 +312,13 @@ export default function ScanPage() {
         data.triples,
       );
       setMatches(matched);
+      setIsMatchLoading(false);
       if (nextRetry.some(Boolean)) {
         setStatus("일부 줄 인식 실패: 실패 줄만 재인식해 주세요.");
       } else {
         setStatus("자동 OCR이 완료되었습니다.");
       }
+      return true;
     },
     [data, lineNeedsRetry],
   );
@@ -300,12 +350,21 @@ export default function ScanPage() {
     setStatus("옵션 3줄 OCR을 실행 중입니다...");
 
     try {
-      await runOcrOnLineCanvases(queued.lineCanvases);
+      const committed = await runOcrOnLineCanvases(
+        queued.lineCanvases,
+        undefined,
+        queued.signature,
+      );
       lastAutoOcrAtRef.current = Date.now();
-      lastAutoSignatureRef.current = queued.signature;
+      if (committed) {
+        lastAutoSignatureRef.current = queued.signature;
+      }
     } catch (error) {
       console.error(error);
       setStatus("자동 OCR에 실패했습니다.");
+      if (queued.signature === latestCaptureSignatureRef.current) {
+        setIsMatchLoading(false);
+      }
     } finally {
       autoOcrBusyRef.current = false;
       setIsOcrRunning(false);
@@ -406,13 +465,27 @@ export default function ScanPage() {
         <div className="space-y-4">
           <ScreenCapturePanel
             onCaptureReady={(payload) => {
-              const { previewUrl, profile } = payload;
+              const { previewUrl, profile, signature } = payload;
+              const isChangedCapture =
+                latestCaptureSignatureRef.current !== signature;
+              latestCaptureSignatureRef.current = signature;
               latestLineCanvasesRef.current = payload.lineCanvases;
               setTraitPreviewUrl(previewUrl);
               setCaptureProfile(profile);
+              if (isChangedCapture) {
+                const resetLines = blankLines();
+                lastCommittedLinesRef.current = resetLines;
+                setLines(resetLines);
+                setLineNeedsRetry([false, false, false]);
+                setMatches([]);
+                setIsMatchLoading(true);
+                setStatus("새 화면 감지: 유효 무기 매칭을 재분석 중입니다...");
+              }
               autoOcrQueuedRef.current = payload;
               void drainAutoOcrQueue();
-              setStatus(`캡쳐 완료 (${profile}), 자동 OCR 대기 중`);
+              if (!isChangedCapture) {
+                setStatus(`캡쳐 완료 (${profile}), 자동 OCR 대기 중`);
+              }
             }}
           />
 
@@ -501,6 +574,7 @@ export default function ScanPage() {
                 size="sm"
                 variant={matchView === "atLeast3" ? "default" : "outline"}
                 onClick={() => setMatchView("atLeast3")}
+                disabled={isMatchLoading}
               >
                 3옵+
               </Button>
@@ -509,49 +583,100 @@ export default function ScanPage() {
                 size="sm"
                 variant={matchView === "atLeast2" ? "default" : "outline"}
                 onClick={() => setMatchView("atLeast2")}
+                disabled={isMatchLoading}
               >
                 2옵+
               </Button>
             </div>
-            {visibleMatches.length === 0 && (
+            {isMatchLoading && (
+              <div className="space-y-3">
+                {[1, 2, 3].map((item) => (
+                  <div
+                    key={item}
+                    className="grid gap-3 rounded-lg border border-border/70 bg-background/45 p-3 md:grid-cols-[96px_1fr]"
+                  >
+                    <Skeleton className="h-24 w-24 rounded-md border border-primary/20" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-2/3" />
+                      <Skeleton className="h-3 w-full" />
+                      <Skeleton className="h-3 w-3/4" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {!isMatchLoading && visibleMatches.length === 0 && (
               <p className="rounded-lg border border-dashed border-border/70 bg-background/40 p-4 text-sm text-muted-foreground">
                 {emptyMatchMessage}
               </p>
             )}
-            {visibleMatches.map((match) => {
-              const weapon = weaponsById.get(match.weaponId);
-              return (
-                <div
-                  key={`${match.weaponId}-${match.matchType}`}
-                  className="grid gap-3 rounded-lg border border-border/70 bg-background/45 p-3 md:grid-cols-[96px_1fr]"
-                >
-                  <div className="flex h-24 items-center justify-center rounded-md border border-primary/20 bg-muted/60">
-                    {weapon?.iconUrl ? (
+            {!isMatchLoading &&
+              visibleMatches.map((match) => {
+                const weapon = weaponsById.get(match.weaponId);
+                const rarity = weapon?.rarity ?? 5;
+                const tone = matchTone(match.matchType);
+                const rarityStyle = rarityTone(rarity);
+                return (
+                  <div
+                    key={`${match.weaponId}-${match.matchType}`}
+                    className={`grid gap-3 rounded-lg border p-3 transition-all duration-200 hover:-translate-y-0.5 md:grid-cols-[96px_1fr] ${tone.cardClass}`}
+                  >
+                    <div
+                      className={`relative flex h-24 items-center justify-center rounded-md border bg-muted/60 ${rarityStyle.frameClass}`}
+                    >
+                      {weapon?.iconUrl ? (
+                        <Image
+                          src={weapon.iconUrl}
+                          alt={`${weapon.nameKo} 아이콘`}
+                          className="relative z-10 h-full w-full rounded-md object-cover"
+                          width={128}
+                          height={128}
+                        />
+                      ) : (
+                        <span className="text-xs text-muted-foreground">
+                          이미지 없음
+                        </span>
+                      )}
                       <Image
-                        src={weapon.iconUrl}
-                        alt={`${weapon.nameKo} 아이콘`}
-                        className="h-full w-full rounded-md object-cover"
-                        width={128}
-                        height={128}
+                        src={rarityStyle.glowAsset}
+                        alt=""
+                        aria-hidden
+                        className="pointer-events-none absolute bottom-0 left-1/2 z-0 h-7 w-26 -translate-x-1/2 object-contain opacity-95"
+                        width={160}
+                        height={44}
                       />
-                    ) : (
-                      <span className="text-xs text-muted-foreground">
-                        이미지 없음
-                      </span>
-                    )}
+                    </div>
+                    <div className="space-y-1 text-sm">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span
+                          className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold tracking-wide ${tone.badgeClass}`}
+                        >
+                          {match.matchType === "exact3"
+                            ? "정확 매칭"
+                            : match.matchType === "partial2"
+                              ? "부분 매칭"
+                              : "카테고리 매칭"}
+                        </span>
+                        <span
+                          className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold tracking-wide ${rarityStyle.badgeClass}`}
+                        >
+                          {rarity}성
+                        </span>
+                      </div>
+                      <p className="font-medium">
+                        {weapon?.nameKo ?? match.weaponId}
+                      </p>
+                      <p className="text-[11px] tracking-wide text-muted-foreground">
+                        {"★".repeat(Math.max(1, Math.min(6, rarity)))}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        매칭: {matchTypeLabel(match.matchType)} / 점수{" "}
+                        {match.score.toFixed(2)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="space-y-1 text-sm">
-                    <p className="font-medium">
-                      {weapon?.nameKo ?? match.weaponId}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      매칭: {matchTypeLabel(match.matchType)} / 점수{" "}
-                      {match.score.toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </CardContent>
         </Card>
       </section>
