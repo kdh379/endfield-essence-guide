@@ -462,7 +462,7 @@ export function ScreenCapturePanel({
   }, [clearLoopTimers]);
 
   return (
-    <Card>
+    <Card className="hud-panel border-primary/20">
       <CardHeader>
         <CardTitle>화면 공유 캡처</CardTitle>
       </CardHeader>
@@ -479,11 +479,13 @@ export function ScreenCapturePanel({
             공유 중지
           </Button>
         </div>
-        <p className="text-sm text-muted-foreground">{ui.status}</p>
+        <p className="status-chip w-fit border-border/70 bg-muted/35 text-muted-foreground">
+          {ui.status}
+        </p>
         <video ref={videoRef} className="hidden" muted playsInline />
         <canvas
           ref={displayCanvasRef}
-          className="w-full rounded-md border bg-black"
+          className="w-full rounded-lg border border-primary/20 bg-black/90"
         />
       </CardContent>
     </Card>

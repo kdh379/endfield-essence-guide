@@ -1,14 +1,19 @@
 ﻿import type { Metadata } from "next";
-import { Geist, Geist_Mono, Noto_Sans } from "next/font/google";
+import { Noto_Sans_KR, Orbitron, Geist_Mono } from "next/font/google";
 
 import { GlobalNav } from "@/shared/layout/global-nav";
 import "./globals.css";
 
-const notoSans = Noto_Sans({ variable: "--font-sans" });
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const notoSansKr = Noto_Sans_KR({
+  variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
+});
+
+const orbitron = Orbitron({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["500", "700"],
 });
 
 const geistMono = Geist_Mono({
@@ -17,8 +22,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "엔드필드 기질 가이드",
-  description: "화면공유 기반 기질 식각 가이드와 추천 파밍 위치 정보",
+  title: "Endfield Essence Guide",
+  description:
+    "Screen-share based essence scanning and farming recommendations",
 };
 
 export default function RootLayout({
@@ -27,14 +33,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={notoSans.variable}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html
+      lang="ko"
+      className={`dark ${notoSansKr.variable} ${orbitron.variable} ${geistMono.variable}`}
+    >
+      <body className="font-sans antialiased">
         <GlobalNav />
         {children}
       </body>
     </html>
   );
 }
-

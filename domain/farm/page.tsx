@@ -2,7 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { ScrollArea } from "@/shared/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -10,8 +12,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-import { loadEnrichmentData, loadManifest, loadStaticData } from "@/shared/lib/data/loader";
-import type { Option, ThreatZone, ThreatZoneOptionPool, Weapon } from "@/shared/lib/data/schemas";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/ui/table";
+import {
+  loadEnrichmentData,
+  loadManifest,
+  loadStaticData,
+} from "@/shared/lib/data/loader";
+import type {
+  Option,
+  ThreatZone,
+  ThreatZoneOptionPool,
+  Weapon,
+} from "@/shared/lib/data/schemas";
 
 type TabKey = "weapon" | "option" | "zone";
 
@@ -25,9 +44,9 @@ interface LoadedData {
 }
 
 function categoryLabel(category: Option["category"]) {
-  if (category === "base") return "기본";
-  if (category === "sub") return "보조";
-  return "스킬";
+  if (category === "base") return "Base";
+  if (category === "sub") return "Sub";
+  return "Skill";
 }
 
 export default function FarmPage() {
@@ -54,18 +73,15 @@ export default function FarmPage() {
         });
       } catch (loadError) {
         console.error(loadError);
-        setError("추천 파밍 데이터를 불러오지 못했습니다.");
+        setError("Failed to load farming recommendation data.");
       }
     };
     void run();
   }, []);
 
-  useEffect(() => {
-    if (!data) return;
-    if (!selectedWeaponId && data.weapons[0]) setSelectedWeaponId(data.weapons[0].id);
-    if (!selectedOptionId && data.options[0]) setSelectedOptionId(data.options[0].id);
-    if (!selectedZoneId && data.threatZones[0]) setSelectedZoneId(data.threatZones[0].id);
-  }, [data, selectedOptionId, selectedWeaponId, selectedZoneId]);
+  const effectiveWeaponId = selectedWeaponId || data?.weapons[0]?.id || "";
+  const effectiveOptionId = selectedOptionId || data?.options[0]?.id || "";
+  const effectiveZoneId = selectedZoneId || data?.threatZones[0]?.id || "";
 
   const zoneById = useMemo(
     () => new Map((data?.threatZones ?? []).map((zone) => [zone.id, zone])),
@@ -82,21 +98,29 @@ export default function FarmPage() {
   }, [data?.threatZonePool]);
 
   const tripleByWeapon = useMemo(
-    () => new Map((data?.triples ?? []).map((triple) => [triple.weaponId, triple.optionTriples])),
+    () =>
+      new Map(
+        (data?.triples ?? []).map((triple) => [
+          triple.weaponId,
+          triple.optionTriples,
+        ]),
+      ),
     [data?.triples],
   );
 
   const recommendedZonesForSelectedWeapon = useMemo(() => {
-    if (!data || !selectedWeaponId) return [];
-    const triples = tripleByWeapon.get(selectedWeaponId) ?? [];
+    if (!data || !effectiveWeaponId) return [];
+    const triples = tripleByWeapon.get(effectiveWeaponId) ?? [];
     if (triples.length === 0) return [];
 
-    const rows = data.threatZones
+    return data.threatZones
       .map((zone) => {
         const optionSet = zoneOptionSetByZone.get(zone.id) ?? new Set<string>();
         let bestMatchCount = 0;
         for (const triple of triples) {
-          const count = triple.filter((optionId) => optionSet.has(optionId)).length;
+          const count = triple.filter((optionId) =>
+            optionSet.has(optionId),
+          ).length;
           if (count > bestMatchCount) bestMatchCount = count;
         }
         return {
@@ -107,16 +131,17 @@ export default function FarmPage() {
       })
       .filter((row) => row.bestMatchCount > 0)
       .sort(
-        (a, b) => b.bestMatchCount - a.bestMatchCount || b.score - a.score || a.zone.nameKo.localeCompare(b.zone.nameKo),
+        (a, b) =>
+          b.bestMatchCount - a.bestMatchCount ||
+          b.score - a.score ||
+          a.zone.nameKo.localeCompare(b.zone.nameKo),
       );
-
-    return rows;
-  }, [data, selectedWeaponId, tripleByWeapon, zoneOptionSetByZone]);
+  }, [data, effectiveWeaponId, tripleByWeapon, zoneOptionSetByZone]);
 
   const recommendedZonesForSelectedOption = useMemo(() => {
-    if (!data || !selectedOptionId) return [];
+    if (!data || !effectiveOptionId) return [];
     return data.threatZonePool
-      .filter((row) => row.optionId === selectedOptionId)
+      .filter((row) => row.optionId === effectiveOptionId)
       .map((row) => ({
         zone: zoneById.get(row.zoneId),
         weight: row.weight ?? 0,
@@ -125,17 +150,20 @@ export default function FarmPage() {
       }))
       .filter((row) => Boolean(row.zone))
       .sort((a, b) => b.weight - a.weight);
-  }, [data, selectedOptionId, zoneById]);
+  }, [data, effectiveOptionId, zoneById]);
 
   const recommendedWeaponsForSelectedZone = useMemo(() => {
-    if (!data || !selectedZoneId) return [];
-    const optionSet = zoneOptionSetByZone.get(selectedZoneId) ?? new Set<string>();
+    if (!data || !effectiveZoneId) return [];
+    const optionSet =
+      zoneOptionSetByZone.get(effectiveZoneId) ?? new Set<string>();
     return data.weapons
       .map((weapon) => {
         const triples = tripleByWeapon.get(weapon.id) ?? [];
         let bestMatchCount = 0;
         for (const triple of triples) {
-          const count = triple.filter((optionId) => optionSet.has(optionId)).length;
+          const count = triple.filter((optionId) =>
+            optionSet.has(optionId),
+          ).length;
           if (count > bestMatchCount) bestMatchCount = count;
         }
         return { weapon, bestMatchCount, score: bestMatchCount / 3 };
@@ -147,70 +175,81 @@ export default function FarmPage() {
           b.score - a.score ||
           a.weapon.nameKo.localeCompare(b.weapon.nameKo),
       );
-  }, [data, selectedZoneId, tripleByWeapon, zoneOptionSetByZone]);
+  }, [data, effectiveZoneId, tripleByWeapon, zoneOptionSetByZone]);
 
   if (error) {
-    return <main className="mx-auto max-w-6xl p-6 text-sm text-red-600">{error}</main>;
+    return (
+      <main className="mx-auto max-w-6xl p-6 text-sm text-red-600">
+        {error}
+      </main>
+    );
   }
 
   if (!data) {
     return (
       <main className="mx-auto max-w-6xl p-6 text-sm text-muted-foreground">
-        추천 파밍 데이터를 불러오는 중...
+        Loading farming recommendation data...
       </main>
     );
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-7xl space-y-4 p-4 md:p-6">
-      <section className="rounded-xl border bg-card p-4">
-        <h1 className="text-xl font-semibold">추천 파밍 위치</h1>
-        <p className="text-sm text-muted-foreground">
-          위협지 드랍 옵션을 기준으로 무기/옵션 추천 정보를 제공합니다. (데이터 v
-          {data.dataVersion})
-        </p>
+    <main className="mx-auto min-h-screen max-w-7xl space-y-4 p-4 pb-10 md:p-6">
+      <section className="hud-panel p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="hud-title">Farm recommend</p>
+            <h1 className="text-2xl font-semibold">에너지 응집점 구역 추천</h1>
+            <p className="text-sm text-muted-foreground">
+              옵션 중복도와 무기의 3옵션 매칭을 기준으로 우선순위를 정합니다.
+            </p>
+          </div>
+          <Badge variant="outline" className="border-primary/40 text-primary">
+            Data v{data.dataVersion}
+          </Badge>
+        </div>
       </section>
 
       <section className="flex flex-wrap gap-2">
         <button
           type="button"
-          className={`rounded-md px-4 py-2 text-sm ${
+          className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
             tab === "weapon"
-              ? "bg-primary text-primary-foreground"
-              : "border bg-background hover:bg-muted"
+              ? "border-primary/50 bg-primary/20 text-primary"
+              : "border-border/70 bg-background/40 text-muted-foreground hover:bg-muted/50 hover:text-foreground"
           }`}
           onClick={() => setTab("weapon")}
         >
-          무기별 추천 위협지
+          By Weapon
         </button>
         <button
           type="button"
-          className={`rounded-md px-4 py-2 text-sm ${
+          className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
             tab === "option"
-              ? "bg-primary text-primary-foreground"
-              : "border bg-background hover:bg-muted"
+              ? "border-primary/50 bg-primary/20 text-primary"
+              : "border-border/70 bg-background/40 text-muted-foreground hover:bg-muted/50 hover:text-foreground"
           }`}
           onClick={() => setTab("option")}
         >
-          옵션별 추천 위협지
+          By Option
         </button>
         <button
           type="button"
-          className={`rounded-md px-4 py-2 text-sm ${
+          className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
             tab === "zone"
-              ? "bg-primary text-primary-foreground"
-              : "border bg-background hover:bg-muted"
+              ? "border-primary/50 bg-primary/20 text-primary"
+              : "border-border/70 bg-background/40 text-muted-foreground hover:bg-muted/50 hover:text-foreground"
           }`}
           onClick={() => setTab("zone")}
         >
-          위협지별 드랍 무기
+          By Zone
         </button>
       </section>
 
       {tab === "weapon" && (
-        <Card>
+        <Card className="hud-panel border-primary/20">
           <CardHeader>
-            <CardTitle>무기별 추천 위협지</CardTitle>
+            <CardTitle>Recommended Zones by Weapon</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Select
@@ -218,10 +257,10 @@ export default function FarmPage() {
                 label: weapon.nameKo,
                 value: weapon.id,
               }))}
-              value={selectedWeaponId}
+              value={effectiveWeaponId}
               onValueChange={(value) => setSelectedWeaponId(value ?? "")}
             >
-              <SelectTrigger className="w-72">
+              <SelectTrigger className="w-full md:w-80">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -232,30 +271,50 @@ export default function FarmPage() {
                 ))}
               </SelectContent>
             </Select>
-            <div className="space-y-3">
-              {recommendedZonesForSelectedWeapon.length === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  선택한 무기에 대한 추천 위협지가 없습니다.
-                </p>
-              )}
-              {recommendedZonesForSelectedWeapon.map((row) => (
-                <div key={row.zone.id} className="rounded-md border p-3 text-sm">
-                  <p className="font-medium">{row.zone.nameKo}</p>
-                  <p className="text-muted-foreground">
-                    일치 옵션 수: {row.bestMatchCount}/3, 추천 점수:{" "}
-                    {row.score.toFixed(2)}
-                  </p>
-                </div>
-              ))}
-            </div>
+            <ScrollArea className="h-[420px] rounded-lg border border-border/70 bg-background/40">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Zone</TableHead>
+                    <TableHead className="text-right">
+                      Matched Options
+                    </TableHead>
+                    <TableHead className="text-right">Score</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recommendedZonesForSelectedWeapon.length === 0 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={3}
+                        className="text-center text-muted-foreground"
+                      >
+                        No recommended zones for this weapon.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {recommendedZonesForSelectedWeapon.map((row) => (
+                    <TableRow key={row.zone.id}>
+                      <TableCell>{row.zone.nameKo}</TableCell>
+                      <TableCell className="text-right">
+                        {row.bestMatchCount}/3
+                      </TableCell>
+                      <TableCell className="text-right text-primary">
+                        {row.score.toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </ScrollArea>
           </CardContent>
         </Card>
       )}
 
       {tab === "option" && (
-        <Card>
+        <Card className="hud-panel border-primary/20">
           <CardHeader>
-            <CardTitle>옵션별 추천 위협지</CardTitle>
+            <CardTitle>Recommended Zones by Option</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Select
@@ -263,10 +322,10 @@ export default function FarmPage() {
                 label: option.nameKo,
                 value: option.id,
               }))}
-              value={selectedOptionId}
+              value={effectiveOptionId}
               onValueChange={(value) => setSelectedOptionId(value ?? "")}
             >
-              <SelectTrigger className="w-72">
+              <SelectTrigger className="w-full md:w-80">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -277,33 +336,50 @@ export default function FarmPage() {
                 ))}
               </SelectContent>
             </Select>
-            <div className="space-y-3">
-              {recommendedZonesForSelectedOption.length === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  선택한 옵션의 추천 위협지가 없습니다.
-                </p>
-              )}
-              {recommendedZonesForSelectedOption.map((row) => (
-                <div
-                  key={`${row.zone?.id}-${row.category}`}
-                  className="rounded-md border p-3 text-sm"
-                >
-                  <p className="font-medium">{row.zone?.nameKo}</p>
-                  <p className="text-muted-foreground">
-                    카테고리: {categoryLabel(row.category)}, 가중치:{" "}
-                    {row.weight.toFixed(2)}, 신뢰도: {row.sourceConfidence}
-                  </p>
-                </div>
-              ))}
-            </div>
+            <ScrollArea className="h-[420px] rounded-lg border border-border/70 bg-background/40">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Zone</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead className="text-right">Weight</TableHead>
+                    <TableHead className="text-right">Confidence</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recommendedZonesForSelectedOption.length === 0 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={4}
+                        className="text-center text-muted-foreground"
+                      >
+                        No recommended zones for this option.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {recommendedZonesForSelectedOption.map((row) => (
+                    <TableRow key={`${row.zone?.id}-${row.category}`}>
+                      <TableCell>{row.zone?.nameKo}</TableCell>
+                      <TableCell>{categoryLabel(row.category)}</TableCell>
+                      <TableCell className="text-right text-primary">
+                        {row.weight.toFixed(2)}
+                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground">
+                        {row.sourceConfidence}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </ScrollArea>
           </CardContent>
         </Card>
       )}
 
       {tab === "zone" && (
-        <Card>
+        <Card className="hud-panel border-primary/20">
           <CardHeader>
-            <CardTitle>위협지별 드랍 무기</CardTitle>
+            <CardTitle>Recommended Weapons by Zone</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Select
@@ -311,10 +387,10 @@ export default function FarmPage() {
                 label: zone.nameKo,
                 value: zone.id,
               }))}
-              value={selectedZoneId}
+              value={effectiveZoneId}
               onValueChange={(value) => setSelectedZoneId(value ?? "")}
             >
-              <SelectTrigger className="w-72">
+              <SelectTrigger className="w-full md:w-80">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -325,26 +401,45 @@ export default function FarmPage() {
                 ))}
               </SelectContent>
             </Select>
-            <div className="space-y-3">
-              {recommendedWeaponsForSelectedZone.length === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  선택한 위협지에서 추천할 무기가 없습니다.
-                </p>
-              )}
-              {recommendedWeaponsForSelectedZone.map((row) => (
-                <div key={row.weapon.id} className="rounded-md border p-3 text-sm">
-                  <p className="font-medium">{row.weapon.nameKo}</p>
-                  <p className="text-muted-foreground">
-                    일치 옵션 수: {row.bestMatchCount}/3, 추천 점수:{" "}
-                    {row.score.toFixed(2)}
-                  </p>
-                </div>
-              ))}
-            </div>
+            <ScrollArea className="h-[420px] rounded-lg border border-border/70 bg-background/40">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Weapon</TableHead>
+                    <TableHead className="text-right">
+                      Matched Options
+                    </TableHead>
+                    <TableHead className="text-right">Score</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recommendedWeaponsForSelectedZone.length === 0 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={3}
+                        className="text-center text-muted-foreground"
+                      >
+                        No recommended weapons for this zone.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {recommendedWeaponsForSelectedZone.map((row) => (
+                    <TableRow key={row.weapon.id}>
+                      <TableCell>{row.weapon.nameKo}</TableCell>
+                      <TableCell className="text-right">
+                        {row.bestMatchCount}/3
+                      </TableCell>
+                      <TableCell className="text-right text-primary">
+                        {row.score.toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </ScrollArea>
           </CardContent>
         </Card>
       )}
     </main>
   );
 }
-

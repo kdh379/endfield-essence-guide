@@ -3,8 +3,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ScreenCapturePanel } from "@/domain/scan/widgets/screen-capture-panel";
+import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Progress } from "@/shared/ui/progress";
+import { Separator } from "@/shared/ui/separator";
 import {
   loadEnrichmentData,
   loadManifest,
@@ -151,6 +154,10 @@ export default function ScanPage() {
     () => lineNeedsRetry.some(Boolean),
     [lineNeedsRetry],
   );
+  const lineProgress = useMemo(() => {
+    const recognized = lines.filter((line) => Boolean(line.optionId)).length;
+    return Math.round((recognized / 3) * 100);
+  }, [lines]);
   const emptyMatchMessage = useMemo(() => {
     if (matches.length === 0) {
       return "OCR 매핑 이후 유효 무기 목록이 표시됩니다.";
@@ -365,18 +372,37 @@ export default function ScanPage() {
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-7xl space-y-4 p-4 md:p-6">
-      <section className="rounded-xl border bg-card p-4">
-        <h1 className="text-xl font-semibold">
-          화면공유 기반 기질 식각 가이드
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          자동 캡쳐/자동 OCR 진행 중{" "}
-          {data ? `(데이터 v${data.dataVersion})` : ""}
-        </p>
+    <main className="mx-auto min-h-screen max-w-7xl space-y-4 p-4 pb-10 md:p-6">
+      <section className="hud-panel p-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="space-y-1">
+            <p className="hud-title">Live Scanner</p>
+            <h1 className="text-2xl font-semibold">기질 식각 분석 콘솔</h1>
+            <p className="text-sm text-muted-foreground">
+              실시간 화면 공유로 옵션 3줄을 자동 인식하고 무기 매칭을
+              추천합니다.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge
+              variant="secondary"
+              className="border-emerald-400/35 bg-emerald-400/10 text-emerald-100"
+            >
+              OCR Active
+            </Badge>
+            {data && (
+              <Badge
+                variant="outline"
+                className="border-primary/40 text-primary"
+              >
+                Data v{data.dataVersion}
+              </Badge>
+            )}
+          </div>
+        </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
+      <section className="grid gap-4 lg:grid-cols-[1.15fr_1fr]">
         <div className="space-y-4">
           <ScreenCapturePanel
             onCaptureReady={(payload) => {
@@ -390,38 +416,60 @@ export default function ScanPage() {
             }}
           />
 
-          <Card>
-            <CardHeader>
-              <CardTitle>인식된 옵션 3줄</CardTitle>
+          <Card className="hud-panel border-primary/20">
+            <CardHeader className="space-y-4">
+              <div className="flex items-center justify-between">
+                <CardTitle>인식된 옵션 3줄</CardTitle>
+                <Badge
+                  variant="outline"
+                  className={
+                    hasFailedLines
+                      ? "border-amber-400/60 text-amber-200"
+                      : "border-emerald-400/60 text-emerald-200"
+                  }
+                >
+                  {hasFailedLines ? "재인식 필요" : "인식 안정"}
+                </Badge>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>인식 진행도</span>
+                  <span>{lineProgress}%</span>
+                </div>
+                <Progress value={lineProgress} className="h-2 bg-muted/60" />
+              </div>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground">{status}</p>
+              <p className="status-chip border-border/70 bg-muted/40 text-muted-foreground">
+                {status}
+              </p>
               {traitPreviewUrl && (
                 <Image
                   src={traitPreviewUrl}
                   alt="고정 영역 미리보기"
-                  className="w-fit max-h-44 rounded-md border object-contain"
+                  className="w-fit max-h-44 rounded-md border border-primary/20 object-contain"
                   width={512}
                   height={512}
                 />
               )}
-              <div className="space-y-2 rounded-md border p-3 text-sm">
+              <div className="space-y-2 rounded-lg border border-border/70 bg-background/50 p-3 text-sm">
                 {lines.map((line, index) => (
                   <div
                     key={line.lineNo}
-                    className="flex items-center justify-between gap-2"
+                    className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 hover:bg-muted/30"
                   >
                     <p>
                       {line.lineNo}.{getLineDisplayText(line, optionsById)}
                     </p>
                     {lineNeedsRetry[index] && (
-                      <span className="rounded bg-amber-100 px-2 py-0.5 text-xs text-amber-700">
+                      <span className="rounded bg-amber-400/15 px-2 py-0.5 text-xs text-amber-200">
                         재인식
                       </span>
                     )}
                   </div>
                 ))}
               </div>
+              <Separator />
               <div className="flex gap-2">
                 <Button
                   variant="outline"
@@ -442,9 +490,9 @@ export default function ScanPage() {
           </Card>
         </div>
 
-        <Card className="h-full">
+        <Card className="hud-panel h-full border-primary/20">
           <CardHeader>
-            <CardTitle>인식 결과 유효 무기</CardTitle>
+            <CardTitle>유효 무기 매칭 결과</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex gap-2">
@@ -466,7 +514,7 @@ export default function ScanPage() {
               </Button>
             </div>
             {visibleMatches.length === 0 && (
-              <p className="text-sm text-muted-foreground">
+              <p className="rounded-lg border border-dashed border-border/70 bg-background/40 p-4 text-sm text-muted-foreground">
                 {emptyMatchMessage}
               </p>
             )}
@@ -475,9 +523,9 @@ export default function ScanPage() {
               return (
                 <div
                   key={`${match.weaponId}-${match.matchType}`}
-                  className="grid gap-3 rounded-md border p-3 md:grid-cols-[96px_1fr]"
+                  className="grid gap-3 rounded-lg border border-border/70 bg-background/45 p-3 md:grid-cols-[96px_1fr]"
                 >
-                  <div className="flex h-24 items-center justify-center rounded-md border bg-muted">
+                  <div className="flex h-24 items-center justify-center rounded-md border border-primary/20 bg-muted/60">
                     {weapon?.iconUrl ? (
                       <Image
                         src={weapon.iconUrl}
@@ -496,7 +544,7 @@ export default function ScanPage() {
                     <p className="font-medium">
                       {weapon?.nameKo ?? match.weaponId}
                     </p>
-                    <p className="text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       매칭: {matchTypeLabel(match.matchType)} / 점수{" "}
                       {match.score.toFixed(2)}
                     </p>
