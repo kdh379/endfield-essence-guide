@@ -1,4 +1,4 @@
-{
+﻿{
   "$schema": "https://ui.shadcn.com/schema.json",
   "style": "base-vega",
   "rsc": true,
@@ -13,13 +13,14 @@
   "iconLibrary": "remixicon",
   "rtl": false,
   "aliases": {
-    "components": "@/components",
-    "utils": "@/lib/utils",
-    "ui": "@/components/ui",
-    "lib": "@/lib",
+    "components": "@/shared",
+    "utils": "@/shared/lib/utils",
+    "ui": "@/shared/ui",
+    "lib": "@/shared/lib",
     "hooks": "@/hooks"
   },
   "menuColor": "inverted",
   "menuAccent": "subtle",
   "registries": {}
 }
+
