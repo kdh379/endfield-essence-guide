@@ -6,7 +6,7 @@ let lastPsm: PSM | null = null;
 
 async function getWorker() {
   if (!workerPromise) {
-    workerPromise = createWorker("kor+eng", 1, {
+    workerPromise = createWorker("kor", 1, {
       logger: () => undefined,
     });
   }

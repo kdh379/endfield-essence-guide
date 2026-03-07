@@ -30,7 +30,7 @@ const LINE_EXTRACT_TUNING = {
    * anchors: 1/2/3줄의 예상 Y 중심 비율.
    */
   centerPick: {
-    anchors: [0.2, 0.48, 0.78] as [number, number, number],
+    anchors: [0.2, 0.48, 0.76] as [number, number, number],
     searchWindowMinPx: 8,
     searchWindowRatio: 0.12,
     minGapPx: 6,

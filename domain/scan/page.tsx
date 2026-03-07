@@ -1,7 +1,6 @@
 ﻿"use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { PSM } from "tesseract.js";
 
 import { ScreenCapturePanel } from "@/domain/scan/widgets/screen-capture-panel";
 import { Button } from "@/shared/ui/button";
@@ -21,23 +20,13 @@ import type {
 import { determineLockReason } from "@/domain/scan/features/matching/model/rules";
 import { matchWeaponsByTrait } from "@/domain/scan/features/matching/model/scorer";
 import {
-  combinedConfidence,
-  getOptionCandidates,
-  parseOcrLine,
-} from "@/domain/scan/features/ocr/model/normalize";
-import {
-  buildLineOcrVariants,
-  preprocessForOcr,
-} from "@/domain/scan/features/ocr/model/preprocess";
-import {
-  recognizeKorean,
-  terminateWorker,
-} from "@/domain/scan/features/ocr/model/tesseract";
+  isReliableMatch,
+  recognizeBestLine,
+} from "@/domain/scan/features/ocr/model/recognize-best-line";
+import { terminateWorker } from "@/domain/scan/features/ocr/model/tesseract";
 import Image from "next/image";
 
 const AUTO_OCR_MIN_INTERVAL_MS = 120;
-const OCR_MIN_MAPPING_SCORE = 0.62;
-const OCR_MIN_COMBINED_CONFIDENCE = 0.58;
 
 interface LoadedData {
   options: Option[];
@@ -70,118 +59,14 @@ function matchTypeLabel(type: "exact3" | "partial2" | "category_fit") {
   return "카테고리 적합";
 }
 
-async function recognizeBestLine(
-  lineCanvas: HTMLCanvasElement,
-  options: Option[],
-): Promise<{
-  rawText: string;
-  normalizedText: string;
-  optionId?: string;
-  valueText?: string;
-  valueNumeric?: number;
-  confidence: number;
-  mappingScore: number;
-}> {
-  let best = {
-    rawText: "",
-    normalizedText: "",
-    optionId: undefined as string | undefined,
-    valueText: undefined as string | undefined,
-    valueNumeric: undefined as number | undefined,
-    confidence: 0,
-    mappingScore: 0,
-    score: -1,
-  };
-
-  const evaluateAttempt = async (attempt: {
-    canvas: HTMLCanvasElement;
-    psm: PSM;
-  }) => {
-    const result = await recognizeKorean(attempt.canvas, attempt.psm);
-    const rawText = (result.lines[0] ?? "").trim();
-    if (!rawText) return;
-
-    const parsed = parseOcrLine(rawText);
-    const top = getOptionCandidates(parsed, options, 1)[0];
-    const mappingScore = top?.score ?? 0;
-    const confidence = combinedConfidence(result.confidence, mappingScore);
-    const totalScore =
-      confidence + (parsed.normalizedText.length >= 2 ? 0.04 : 0);
-
-    if (
-      totalScore > best.score ||
-      (totalScore === best.score && mappingScore > best.mappingScore)
-    ) {
-      best = {
-        rawText,
-        normalizedText: parsed.normalizedText,
-        optionId: top?.optionId,
-        valueText: parsed.valueText,
-        valueNumeric: parsed.valueNumeric,
-        confidence,
-        mappingScore,
-        score: totalScore,
-      };
-    }
-  };
-
-  const baseAttempts: Array<{
-    canvas: HTMLCanvasElement;
-    psm: PSM;
-  }> = [
-    { canvas: preprocessForOcr(lineCanvas, "threshold"), psm: PSM.SINGLE_LINE },
-    {
-      canvas: preprocessForOcr(lineCanvas, "highContrast"),
-      psm: PSM.SINGLE_LINE,
-    },
-    { canvas: preprocessForOcr(lineCanvas, "default"), psm: PSM.SINGLE_LINE },
-  ];
-
-  for (const attempt of baseAttempts) {
-    await evaluateAttempt(attempt);
+function getLineDisplayText(
+  line: ScannedTraitLine,
+  optionsById: Map<string, Option>,
+) {
+  if (line.optionId) {
+    return optionsById.get(line.optionId)?.nameKo ?? line.rawText;
   }
-
-  // Short labels such as "힘 증가" can fail with SINGLE_LINE.
-  // Run a targeted fallback only when base attempts are unreliable.
-  if (!isReliableMatch(best)) {
-    const variantById = new Map(
-      buildLineOcrVariants(lineCanvas).map((variant) => [variant.id, variant]),
-    );
-    const fallbackVariants = [
-      variantById.get("text-threshold"),
-      variantById.get("text-highContrast"),
-      variantById.get("full-threshold"),
-    ].flatMap((variant) => (variant ? [variant] : []));
-
-    for (const variant of fallbackVariants) {
-      await evaluateAttempt({ canvas: variant.canvas, psm: PSM.SINGLE_LINE });
-      if (variant.region === "text") {
-        await evaluateAttempt({ canvas: variant.canvas, psm: PSM.SINGLE_WORD });
-      }
-    }
-  }
-
-  return {
-    rawText: best.rawText,
-    normalizedText: best.normalizedText,
-    optionId: best.optionId,
-    valueText: best.valueText,
-    valueNumeric: best.valueNumeric,
-    confidence: best.confidence,
-    mappingScore: best.mappingScore,
-  };
-}
-
-function isReliableMatch(result: {
-  optionId?: string;
-  mappingScore: number;
-  confidence: number;
-}) {
-  return (
-    Boolean(result.optionId) &&
-    result.mappingScore >= OCR_MIN_MAPPING_SCORE &&
-    result.confidence >= OCR_MIN_COMBINED_CONFIDENCE
-  );
+  return line.rawText || line.normalizedText || "-";
 }
 
 export default function ScanPage() {
@@ -250,6 +135,10 @@ export default function ScanPage() {
     () => new Map((data?.weapons ?? []).map((weapon) => [weapon.id, weapon])),
     [data?.weapons],
   );
+  const optionsById = useMemo(
+    () => new Map((data?.options ?? []).map((option) => [option.id, option])),
+    [data?.options],
+  );
   const visibleMatches = useMemo(() => {
     if (matchView === "atLeast3") {
       return matches.filter((match) => match.matchType === "exact3");
@@ -262,6 +151,12 @@ export default function ScanPage() {
     () => lineNeedsRetry.some(Boolean),
     [lineNeedsRetry],
   );
+  const emptyMatchMessage = useMemo(() => {
+    if (matches.length === 0) {
+      return "OCR 매핑 이후 유효 무기 목록이 표시됩니다.";
+    }
+    return "현재 필터에서 표시할 무기가 없습니다.";
+  }, [matches.length]);
 
   const runOcrOnLineCanvases = useCallback(
     async (
@@ -517,7 +412,7 @@ export default function ScanPage() {
                     className="flex items-center justify-between gap-2"
                   >
                     <p>
-                      {line.lineNo}. {line.rawText || "-"}
+                      {line.lineNo}.{getLineDisplayText(line, optionsById)}
                     </p>
                     {lineNeedsRetry[index] && (
                       <span className="rounded bg-amber-100 px-2 py-0.5 text-xs text-amber-700">
@@ -572,9 +467,7 @@ export default function ScanPage() {
             </div>
             {visibleMatches.length === 0 && (
               <p className="text-sm text-muted-foreground">
-                {matches.length === 0
-                  ? "OCR 매핑 이후 유효 무기 목록이 표시됩니다."
-                  : "현재 필터에서 표시할 무기가 없습니다."}
+                {emptyMatchMessage}
               </p>
             )}
             {visibleMatches.map((match) => {
