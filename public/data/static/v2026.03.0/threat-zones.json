@@ -1,0 +1,35 @@
+﻿{
+  "dataVersion": "2026.03.0",
+  "items": [
+    {
+      "id": "zone_001",
+      "nameKo": "거점 지역",
+      "type": "threat",
+      "difficultyTags": []
+    },
+    {
+      "id": "zone_002",
+      "nameKo": "오리지늄 연구 구역",
+      "type": "threat",
+      "difficultyTags": []
+    },
+    {
+      "id": "zone_003",
+      "nameKo": "광맥 구역",
+      "type": "threat",
+      "difficultyTags": []
+    },
+    {
+      "id": "zone_004",
+      "nameKo": "에너지 공급 고지",
+      "type": "threat",
+      "difficultyTags": []
+    },
+    {
+      "id": "zone_005",
+      "nameKo": "무릉성",
+      "type": "threat",
+      "difficultyTags": []
+    }
+  ]
+}

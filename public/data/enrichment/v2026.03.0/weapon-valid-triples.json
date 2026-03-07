@@ -1,0 +1,287 @@
+﻿{
+  "dataVersion": "2026.03.0",
+  "items": [
+    {
+      "weaponId": "wpn_6_001",
+      "optionTriples": [["opt_base_002", "opt_sub_005", "opt_skill_013"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_002",
+      "optionTriples": [["opt_base_002", "opt_sub_005", "opt_skill_010"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_003",
+      "optionTriples": [["opt_base_002", "opt_sub_001", "opt_skill_014"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_004",
+      "optionTriples": [["opt_base_004", "opt_sub_007", "opt_skill_008"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_005",
+      "optionTriples": [["opt_base_003", "opt_sub_001", "opt_skill_009"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_006",
+      "optionTriples": [["opt_base_004", "opt_sub_012", "opt_skill_002"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_007",
+      "optionTriples": [["opt_base_003", "opt_sub_006", "opt_skill_002"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_008",
+      "optionTriples": [["opt_base_003", "opt_sub_011", "opt_skill_008"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_009",
+      "optionTriples": [["opt_base_005", "opt_sub_011", "opt_skill_006"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_010",
+      "optionTriples": [["opt_base_002", "opt_sub_002", "opt_skill_012"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_011",
+      "optionTriples": [["opt_base_001", "opt_sub_004", "opt_skill_013"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_012",
+      "optionTriples": [["opt_base_003", "opt_sub_011", "opt_skill_002"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_013",
+      "optionTriples": [["opt_base_004", "opt_sub_008", "opt_skill_002"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_014",
+      "optionTriples": [["opt_base_004", "opt_sub_011", "opt_skill_003"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_015",
+      "optionTriples": [["opt_base_001", "opt_sub_004", "opt_skill_004"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_016",
+      "optionTriples": [["opt_base_004", "opt_sub_001", "opt_skill_008"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_017",
+      "optionTriples": [["opt_base_003", "opt_sub_004", "opt_skill_011"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_018",
+      "optionTriples": [["opt_base_002", "opt_sub_009", "opt_skill_009"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_019",
+      "optionTriples": [["opt_base_001", "opt_sub_001", "opt_skill_002"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_020",
+      "optionTriples": [["opt_base_005", "opt_sub_005", "opt_skill_010"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_021",
+      "optionTriples": [["opt_base_003", "opt_sub_007", "opt_skill_002"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_022",
+      "optionTriples": [["opt_base_002", "opt_sub_001", "opt_skill_014"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_023",
+      "optionTriples": [["opt_base_003", "opt_sub_006", "opt_skill_005"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_024",
+      "optionTriples": [["opt_base_004", "opt_sub_003", "opt_skill_002"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_025",
+      "optionTriples": [["opt_base_005", "opt_sub_001", "opt_skill_005"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_6_026",
+      "optionTriples": [["opt_base_003", "opt_sub_001", "opt_skill_009"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_001",
+      "optionTriples": [["opt_base_001", "opt_sub_004", "opt_skill_004"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_002",
+      "optionTriples": [["opt_base_005", "opt_sub_002", "opt_skill_005"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_003",
+      "optionTriples": [["opt_base_005", "opt_sub_006", "opt_skill_011"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_004",
+      "optionTriples": [["opt_base_005", "opt_sub_003", "opt_skill_009"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_005",
+      "optionTriples": [["opt_base_004", "opt_sub_001", "opt_skill_008"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_006",
+      "optionTriples": [["opt_base_002", "opt_sub_002", "opt_skill_007"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_007",
+      "optionTriples": [["opt_base_004", "opt_sub_002", "opt_skill_007"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_008",
+      "optionTriples": [["opt_base_002", "opt_sub_012", "opt_skill_010"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_009",
+      "optionTriples": [["opt_base_001", "opt_sub_004", "opt_skill_008"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_010",
+      "optionTriples": [["opt_base_001", "opt_sub_001", "opt_skill_002"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_011",
+      "optionTriples": [["opt_base_005", "opt_sub_008", "opt_skill_012"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_012",
+      "optionTriples": [["opt_base_001", "opt_sub_007", "opt_skill_002"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_013",
+      "optionTriples": [["opt_base_002", "opt_sub_010", "opt_skill_009"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_014",
+      "optionTriples": [["opt_base_005", "opt_sub_005", "opt_skill_010"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_015",
+      "optionTriples": [["opt_base_005", "opt_sub_002", "opt_skill_011"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_016",
+      "optionTriples": [["opt_base_004", "opt_sub_010", "opt_skill_002"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_017",
+      "optionTriples": [["opt_base_001", "opt_sub_002", "opt_skill_005"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_018",
+      "optionTriples": [["opt_base_002", "opt_sub_004", "opt_skill_002"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_019",
+      "optionTriples": [["opt_base_004", "opt_sub_006", "opt_skill_012"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_020",
+      "optionTriples": [["opt_base_001", "opt_sub_001", "opt_skill_014"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    },
+    {
+      "weaponId": "wpn_5_021",
+      "optionTriples": [["opt_base_005", "opt_sub_005", "opt_skill_013"]],
+      "sourceRefs": ["ryon-gi.github.io/db.js"],
+      "sourceConfidence": 0.95
+    }
+  ]
+}

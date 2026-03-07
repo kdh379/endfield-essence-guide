@@ -1,0 +1,740 @@
+﻿{
+  "dataVersion": "2026.03.0",
+  "items": [
+    {
+      "zoneId": "zone_001",
+      "category": "base",
+      "optionId": "opt_base_001",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "base",
+      "optionId": "opt_base_005",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "base",
+      "optionId": "opt_base_002",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "base",
+      "optionId": "opt_base_004",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "base",
+      "optionId": "opt_base_003",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "sub",
+      "optionId": "opt_sub_001",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "sub",
+      "optionId": "opt_sub_008",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "sub",
+      "optionId": "opt_sub_010",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "sub",
+      "optionId": "opt_sub_003",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "sub",
+      "optionId": "opt_sub_009",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "sub",
+      "optionId": "opt_sub_006",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "sub",
+      "optionId": "opt_sub_002",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "sub",
+      "optionId": "opt_sub_007",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "skill",
+      "optionId": "opt_skill_001",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "skill",
+      "optionId": "opt_skill_009",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "skill",
+      "optionId": "opt_skill_012",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "skill",
+      "optionId": "opt_skill_006",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "skill",
+      "optionId": "opt_skill_004",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "skill",
+      "optionId": "opt_skill_005",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "skill",
+      "optionId": "opt_skill_014",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_001",
+      "category": "skill",
+      "optionId": "opt_skill_013",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "base",
+      "optionId": "opt_base_001",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "base",
+      "optionId": "opt_base_005",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "base",
+      "optionId": "opt_base_002",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "base",
+      "optionId": "opt_base_004",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "base",
+      "optionId": "opt_base_003",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "sub",
+      "optionId": "opt_sub_001",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "sub",
+      "optionId": "opt_sub_004",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "sub",
+      "optionId": "opt_sub_010",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "sub",
+      "optionId": "opt_sub_003",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "sub",
+      "optionId": "opt_sub_009",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "sub",
+      "optionId": "opt_sub_011",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "sub",
+      "optionId": "opt_sub_002",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "sub",
+      "optionId": "opt_sub_007",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "skill",
+      "optionId": "opt_skill_009",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "skill",
+      "optionId": "opt_skill_012",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "skill",
+      "optionId": "opt_skill_007",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "skill",
+      "optionId": "opt_skill_004",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "skill",
+      "optionId": "opt_skill_002",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "skill",
+      "optionId": "opt_skill_010",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "skill",
+      "optionId": "opt_skill_003",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_002",
+      "category": "skill",
+      "optionId": "opt_skill_013",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "base",
+      "optionId": "opt_base_001",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "base",
+      "optionId": "opt_base_005",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "base",
+      "optionId": "opt_base_002",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "base",
+      "optionId": "opt_base_004",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "base",
+      "optionId": "opt_base_003",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "sub",
+      "optionId": "opt_sub_005",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "sub",
+      "optionId": "opt_sub_004",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "sub",
+      "optionId": "opt_sub_008",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "sub",
+      "optionId": "opt_sub_003",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "sub",
+      "optionId": "opt_sub_009",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "sub",
+      "optionId": "opt_sub_011",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "sub",
+      "optionId": "opt_sub_006",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "sub",
+      "optionId": "opt_sub_012",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "skill",
+      "optionId": "opt_skill_001",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "skill",
+      "optionId": "opt_skill_009",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "skill",
+      "optionId": "opt_skill_004",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "skill",
+      "optionId": "opt_skill_011",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "skill",
+      "optionId": "opt_skill_002",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "skill",
+      "optionId": "opt_skill_005",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "skill",
+      "optionId": "opt_skill_008",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_003",
+      "category": "skill",
+      "optionId": "opt_skill_013",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "base",
+      "optionId": "opt_base_001",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "base",
+      "optionId": "opt_base_005",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "base",
+      "optionId": "opt_base_002",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "base",
+      "optionId": "opt_base_004",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "base",
+      "optionId": "opt_base_003",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "sub",
+      "optionId": "opt_sub_001",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "sub",
+      "optionId": "opt_sub_005",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "sub",
+      "optionId": "opt_sub_004",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "sub",
+      "optionId": "opt_sub_008",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "sub",
+      "optionId": "opt_sub_009",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "sub",
+      "optionId": "opt_sub_011",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "sub",
+      "optionId": "opt_sub_006",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "sub",
+      "optionId": "opt_sub_012",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "skill",
+      "optionId": "opt_skill_012",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "skill",
+      "optionId": "opt_skill_006",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "skill",
+      "optionId": "opt_skill_007",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "skill",
+      "optionId": "opt_skill_011",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "skill",
+      "optionId": "opt_skill_002",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "skill",
+      "optionId": "opt_skill_010",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "skill",
+      "optionId": "opt_skill_003",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_004",
+      "category": "skill",
+      "optionId": "opt_skill_014",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "base",
+      "optionId": "opt_base_001",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "base",
+      "optionId": "opt_base_005",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "base",
+      "optionId": "opt_base_002",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "base",
+      "optionId": "opt_base_004",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "base",
+      "optionId": "opt_base_003",
+      "weight": 0.2,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "sub",
+      "optionId": "opt_sub_001",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "sub",
+      "optionId": "opt_sub_005",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "sub",
+      "optionId": "opt_sub_010",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "sub",
+      "optionId": "opt_sub_003",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "sub",
+      "optionId": "opt_sub_011",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "sub",
+      "optionId": "opt_sub_002",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "sub",
+      "optionId": "opt_sub_007",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "sub",
+      "optionId": "opt_sub_012",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "skill",
+      "optionId": "opt_skill_001",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "skill",
+      "optionId": "opt_skill_006",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "skill",
+      "optionId": "opt_skill_011",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "skill",
+      "optionId": "opt_skill_010",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "skill",
+      "optionId": "opt_skill_003",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "skill",
+      "optionId": "opt_skill_005",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "skill",
+      "optionId": "opt_skill_008",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    },
+    {
+      "zoneId": "zone_005",
+      "category": "skill",
+      "optionId": "opt_skill_014",
+      "weight": 0.125,
+      "sourceConfidence": 0.95
+    }
+  ]
+}
