@@ -12,15 +12,6 @@ export interface RectPx {
   height: number;
 }
 
-export interface RoiTuning {
-  dx: number;
-  dy: number;
-  dw: number;
-  dh: number;
-  lineDy: number;
-  lineDh: number;
-}
-
 export interface LineGuideConfig {
   x: number;
   width: number;
@@ -38,15 +29,6 @@ const TARGET_ASPECT = 16 / 9;
 
 const BASE_ROI_CONFIG = {
   traitRect: { x: 0.09, y: 0.49, width: 0.14, height: 0.125 } as RectN,
-};
-
-export const DEFAULT_ROI_TUNING: RoiTuning = {
-  dx: 0,
-  dy: 0,
-  dw: 0,
-  dh: 0,
-  lineDy: 0,
-  lineDh: 0,
 };
 
 function clamp(value: number, min: number, max: number) {
@@ -68,16 +50,6 @@ function normalizeRect(rect: RectN): RectN {
     width: clamp01(Math.min(width, 1 - x)),
     height: clamp01(Math.min(height, 1 - y)),
   };
-}
-
-function applyTuning(rect: RectN, tuning: RoiTuning): RectN {
-  const tuned: RectN = {
-    x: rect.x + tuning.dx,
-    y: rect.y + tuning.dy,
-    width: rect.width + tuning.dw,
-    height: rect.height + tuning.dh,
-  };
-  return normalizeRect(tuned);
 }
 
 function toPixelRectInArea(rect: RectN, area: RectPx): RectPx {
@@ -106,15 +78,11 @@ export function getAspectFit16x9Rect(width: number, height: number): RectPx {
   return { x: 0, y, width, height: fitHeight };
 }
 
-export function getScanRoiPixels(
-  width: number,
-  height: number,
-  tuning: RoiTuning = DEFAULT_ROI_TUNING,
-): ScanRoiPixels {
+export function getScanRoiPixels(width: number, height: number): ScanRoiPixels {
   const frame16x9 = getAspectFit16x9Rect(width, height);
 
   const traitRect = toPixelRectInArea(
-    applyTuning(BASE_ROI_CONFIG.traitRect, tuning),
+    normalizeRect(BASE_ROI_CONFIG.traitRect),
     frame16x9,
   );
 

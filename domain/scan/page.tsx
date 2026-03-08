@@ -28,10 +28,7 @@ import {
   isReliableMatch,
   recognizeBestLine,
 } from "@/domain/scan/features/ocr/model/recognize-best-line";
-import {
-  disposeOcrEngine,
-  warmupOcrEngine,
-} from "@/domain/scan/features/ocr/model/paddle-ocr-engine";
+import { warmupOcrEngine } from "@/domain/scan/features/ocr/model/paddle-ocr-engine";
 import Image from "next/image";
 
 const AUTO_OCR_MIN_INTERVAL_MS = 120;
@@ -151,17 +148,21 @@ export default function ScanPage() {
   const latestCaptureSignatureRef = useRef<string | null>(null);
   const autoOcrLatencyHistoryRef = useRef<number[]>([]);
   const autoFastPathOnlyRef = useRef(false);
+  const autoOcrTimeoutRef = useRef<number | null>(null);
+  const isPageActiveRef = useRef(true);
   const lastCommittedLinesRef =
     useRef<[ScannedTraitLine, ScannedTraitLine, ScannedTraitLine]>(
       blankLines(),
     );
 
   useEffect(() => {
+    isPageActiveRef.current = true;
     const run = async () => {
       try {
         const manifest = await loadManifest();
         const staticData = await loadStaticData(manifest.dataVersion);
         const enrichment = await loadEnrichmentData(manifest.dataVersion);
+        if (!isPageActiveRef.current) return;
         setData({
           options: staticData.options,
           weapons: staticData.weapons,
@@ -170,9 +171,11 @@ export default function ScanPage() {
         });
         setStatus("게임 화면을 공유하면 자동 인식을 시작합니다.");
         void warmupOcrEngine().catch((error) => {
+          if (!isPageActiveRef.current) return;
           console.error(error);
         });
       } catch (error) {
+        if (!isPageActiveRef.current) return;
         console.error(error);
         setLoadingError("정적 데이터 JSON 로드에 실패했습니다.");
       }
@@ -180,7 +183,14 @@ export default function ScanPage() {
 
     void run();
     return () => {
-      void disposeOcrEngine();
+      isPageActiveRef.current = false;
+      autoOcrBusyRef.current = false;
+      autoOcrQueuedRef.current = null;
+      latestLineCanvasesRef.current = null;
+      if (autoOcrTimeoutRef.current !== null) {
+        window.clearTimeout(autoOcrTimeoutRef.current);
+        autoOcrTimeoutRef.current = null;
+      }
     };
   }, []);
 
@@ -225,6 +235,7 @@ export default function ScanPage() {
       targetIndexes?: number[],
       expectedSignature?: string,
     ) => {
+      if (!isPageActiveRef.current) return false;
       if (!data) {
         setStatus("데이터가 아직 로드되지 않았습니다.");
         return false;
@@ -250,6 +261,7 @@ export default function ScanPage() {
           },
         );
         totalLatencyMs += best.latencyMs;
+        if (!isPageActiveRef.current) return false;
         const hasText =
           (best.normalizedText || best.rawText).trim().length >= 2;
         const reliable = hasText && isReliableMatch(best);
@@ -288,6 +300,7 @@ export default function ScanPage() {
       ) {
         return false;
       }
+      if (!isPageActiveRef.current) return false;
       lastCommittedLinesRef.current = typedLines;
       setLines(typedLines);
       setLineNeedsRetry(nextRetry);
@@ -328,6 +341,7 @@ export default function ScanPage() {
   );
 
   const drainAutoOcrQueue = useCallback(async () => {
+    if (!isPageActiveRef.current) return;
     if (autoOcrBusyRef.current) return;
 
     const queued = autoOcrQueuedRef.current;
@@ -337,7 +351,8 @@ export default function ScanPage() {
     const elapsed = now - lastAutoOcrAtRef.current;
     if (elapsed < AUTO_OCR_MIN_INTERVAL_MS) {
       const wait = AUTO_OCR_MIN_INTERVAL_MS - elapsed;
-      window.setTimeout(() => {
+      autoOcrTimeoutRef.current = window.setTimeout(() => {
+        autoOcrTimeoutRef.current = null;
         void drainAutoOcrQueue();
       }, wait);
       return;
@@ -364,6 +379,7 @@ export default function ScanPage() {
         lastAutoSignatureRef.current = queued.signature;
       }
     } catch (error) {
+      if (!isPageActiveRef.current) return;
       console.error(error);
       setStatus("자동 OCR에 실패했습니다.");
       if (queued.signature === latestCaptureSignatureRef.current) {
@@ -371,9 +387,11 @@ export default function ScanPage() {
       }
     } finally {
       autoOcrBusyRef.current = false;
+      if (!isPageActiveRef.current) return;
       setIsOcrRunning(false);
       if (autoOcrQueuedRef.current) {
-        window.setTimeout(() => {
+        autoOcrTimeoutRef.current = window.setTimeout(() => {
+          autoOcrTimeoutRef.current = null;
           void drainAutoOcrQueue();
         }, 20);
       }

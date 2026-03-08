@@ -12,6 +12,7 @@ const DICT_URL =
 const MODEL_HEIGHT = 48;
 const MODEL_WIDTH = 320;
 const MAX_WASM_THREADS = 4;
+const ORT_LOG_SEVERITY_ERROR = 3;
 
 type OrtModule = typeof import("onnxruntime-web");
 type OrtTensor = {
@@ -157,6 +158,7 @@ class PaddleOcrEngine implements OcrEngine {
       try {
         session = await ort.InferenceSession.create(MODEL_URL, {
           executionProviders: [provider],
+          logSeverityLevel: ORT_LOG_SEVERITY_ERROR,
         });
         this.preferredProvider = provider;
         break;
