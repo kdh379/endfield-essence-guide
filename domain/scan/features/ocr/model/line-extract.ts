@@ -173,6 +173,10 @@ function pickGuidedCenters(
   return centers;
 }
 
+/**
+ * 고정 ROI 안에서 옵션 3줄의 라인 crop을 만든다.
+ * OCR 성능이 갑자기 흔들릴 때는 모델보다 먼저 이 함수의 lineRect/anchor 튜닝을 확인해야 한다.
+ */
 export function extractLineRegionsFromTrait(
   traitCanvas: HTMLCanvasElement,
 ): ExtractedLineRegions {
@@ -211,6 +215,10 @@ export function extractLineRegionsFromTrait(
   };
 }
 
+/**
+ * 디버깅용 3줄 미리보기 캔버스를 합성한다.
+ * OCR 입력 자체는 각 line canvas이므로, preview 품질보다 lineRect 정합성이 더 중요하다.
+ */
 export function composeLinePreview(
   lineCanvases: [HTMLCanvasElement, HTMLCanvasElement, HTMLCanvasElement],
 ): HTMLCanvasElement {

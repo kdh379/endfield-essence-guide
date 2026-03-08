@@ -27,6 +27,10 @@ export interface RecognizedLine {
   variantId: string;
 }
 
+/**
+ * 자동 확정 가능한 결과인지 판단한다.
+ * 임계값을 낮추면 속도는 빨라지지만, 잘못된 옵션이 조기에 확정될 위험이 커진다.
+ */
 export function isReliableMatch(result: {
   optionId?: string;
   mappingScore: number;
@@ -39,6 +43,11 @@ export function isReliableMatch(result: {
   );
 }
 
+/**
+ * 한 줄 OCR의 orchestration 레이어.
+ * 엔진 호출, variant 순서, early-exit, 후처리 매핑이 모두 여기서 만나므로
+ * 속도/정확도 트레이드오프를 조정할 때 가장 먼저 보는 진입점이다.
+ */
 export async function recognizeBestLine(
   lineCanvas: HTMLCanvasElement,
   options: Option[],
@@ -73,6 +82,7 @@ export async function recognizeBestLine(
       ? AUTO_OCR_FAST_VARIANTS
       : AUTO_OCR_VARIANTS;
 
+  /** 빠른 성공 케이스는 즉시 종료해 전체 3줄 latency를 낮춘다. */
   const shouldEarlyExit = () =>
     Boolean(best.optionId) &&
     (isReliableMatch(best) ||

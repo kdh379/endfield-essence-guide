@@ -76,6 +76,11 @@ function estimateThreshold(data: Uint8ClampedArray): number {
   return Math.round(min * 0.4 + max * 0.6);
 }
 
+/**
+ * OCR 입력용 최소 전처리 단계.
+ * threshold/invert의 효과는 게임 UI 대비와 글자 외곽선에 크게 좌우되므로,
+ * 정확도 튜닝은 보통 이 함수보다 variant 순서에서 먼저 조정하는 편이 안전하다.
+ */
 export function preprocessForOcr(
   source: HTMLCanvasElement,
   preset: PreprocessPreset,
@@ -99,6 +104,10 @@ export function preprocessForOcr(
   return canvas;
 }
 
+/**
+ * 한 줄 이미지에서 OCR 시도 후보를 만든다.
+ * `full-*`은 속도 우선, `text-*`는 우측 수치/장식 노이즈를 줄인 복구 경로다.
+ */
 export function buildLineOcrVariants(
   source: HTMLCanvasElement,
 ): LineOcrVariant[] {

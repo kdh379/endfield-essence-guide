@@ -72,6 +72,10 @@ function cropCanvas(
   return canvas;
 }
 
+/**
+ * 고정 ROI 내부 내용 변화를 빠르게 감지하기 위한 저해상도 fingerprint.
+ * OCR용 고품질 이미지가 아니라 "같은 기질인지 다른 기질인지"를 안정적으로 구분하는 용도다.
+ */
 function createTraitFingerprint(source: HTMLCanvasElement) {
   const sampleWidth = 32;
   const sampleHeight = 24;

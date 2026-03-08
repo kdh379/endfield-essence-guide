@@ -25,6 +25,10 @@ interface PreparedOption {
   optionRuleCompact: string;
 }
 
+/**
+ * OCR 원문을 사전 매칭 가능한 형태로 정규화한다.
+ * 모델이 바뀌어도 후처리 품질의 기준점이 되는 함수라서, 규칙 추가 시 기존 alias 충돌을 같이 봐야 한다.
+ */
 export function normalizeOcrText(text: string): string {
   const nfkc = text.normalize("NFKC").toLowerCase();
   const unified = nfkc
@@ -147,6 +151,10 @@ export function extractValueParts(text: string): {
   };
 }
 
+/**
+ * OCR 한 줄을 "옵션명 + 수치" 구조로 해석한다.
+ * 짧은 옵션명은 여기서 완벽히 확정하려고 하지 않고, 후보 사전 매칭 단계에 넘기는 것이 안정적이다.
+ */
 export function parseOcrLine(rawText: string): ParsedLine {
   const basicNormalized = normalizeOcrText(rawText);
   const vanillaNormalized = normalizeWithVanillaRules(rawText);
@@ -160,6 +168,10 @@ export function parseOcrLine(rawText: string): ParsedLine {
   return { rawText, normalizedText: merged, ...value };
 }
 
+/**
+ * 도메인 사전을 기준으로 OCR 후보 옵션을 점수화한다.
+ * 실제 인식률 튜닝의 대부분은 모델 교체보다 alias/rule bonus/short token bonus 조정에서 나온다.
+ */
 export function getOptionCandidates(
   parsed: ParsedLine,
   options: Option[],
@@ -242,6 +254,10 @@ export function getOptionCandidates(
   return scored.sort((a, b) => b.score - a.score).slice(0, topN);
 }
 
+/**
+ * OCR confidence와 도메인 매핑 점수를 합성한다.
+ * 한쪽 가중치만 올리면 빈 문자열 확정이나 오매칭이 늘 수 있어, 비율 변경은 회귀 테스트가 필요하다.
+ */
 export function combinedConfidence(
   ocrConfidence: number,
   mappingScore: number,

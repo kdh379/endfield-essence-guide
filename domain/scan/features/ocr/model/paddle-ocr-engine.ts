@@ -75,6 +75,11 @@ async function loadDictionary() {
     .filter(Boolean);
 }
 
+/**
+ * 브라우저 전용 PaddleOCR recognition 엔진.
+ * detection 모델 없이 line crop 입력을 바로 받는 구조라서, 정확도 문제의 원인이
+ * 모델인지 crop/전처리인지 분리해서 봐야 한다.
+ */
 class PaddleOcrEngine implements OcrEngine {
   private ort: OrtModule | null = null;
   private session: Awaited<
@@ -86,6 +91,7 @@ class PaddleOcrEngine implements OcrEngine {
   private warm = false;
   private preferredProvider: "webgpu" | "wasm" = "wasm";
 
+  /** 첫 추론 지연을 줄이기 위한 warmup. 화면 진입 시 1회만 호출하는 것이 전제다. */
   async warmup() {
     await this.ensureReady();
     if (this.warm) return;
@@ -178,6 +184,10 @@ class PaddleOcrEngine implements OcrEngine {
     this.outputName = session.outputNames[0] ?? "softmax_0.tmp_0";
   }
 
+  /**
+   * 입력 line canvas를 PP-OCR recognition 텐서로 변환한다.
+   * width 리사이즈 정책과 정규화 방식은 모델 호환성, 속도, 짧은 단어 인식률에 직접 영향 준다.
+   */
   private canvasToTensor(canvas: HTMLCanvasElement, ort: OrtModule) {
     const ratio = canvas.width / Math.max(1, canvas.height);
     const resizedWidth = roundWidth(MODEL_HEIGHT * ratio);
@@ -213,6 +223,10 @@ class PaddleOcrEngine implements OcrEngine {
     return new ort.Tensor("float32", chw, [1, 3, MODEL_HEIGHT, MODEL_WIDTH]);
   }
 
+  /**
+   * CTC 계열 출력에서 토큰을 복원한다.
+   * 글자가 빠지거나 반복되는 문제는 후처리보다 이 decode 단계와 dictionary 정합성부터 확인해야 한다.
+   */
   private decode(output: OrtTensor) {
     if (!this.dictionary) {
       throw new Error("OCR dictionary unavailable");
