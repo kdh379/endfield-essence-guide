@@ -1,7 +1,7 @@
 ﻿"use client";
 
-import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
 import {
   Select,
   SelectContent,
@@ -79,18 +79,6 @@ export function TraitEditor({
             </Select>
           </div>
           <div className="mt-2 flex items-center gap-2">
-            <Input
-              value={line.valueText ?? ""}
-              onChange={(event) =>
-                updateLine(index, {
-                  valueText: event.target.value,
-                  valueNumeric: Number(
-                    event.target.value.replace(/[^\d.-]/g, ""),
-                  ),
-                })
-              }
-              placeholder="수치 값 (예: 12.5%)"
-            />
             <Button
               size="sm"
               variant="secondary"

@@ -46,8 +46,6 @@ export interface ScannedTraitLine {
   rawText: string;
   normalizedText: string;
   optionId?: string;
-  valueText?: string;
-  valueNumeric?: number;
   confidence: number;
   userCorrected?: boolean;
 }

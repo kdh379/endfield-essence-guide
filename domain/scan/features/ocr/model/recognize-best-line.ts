@@ -3,51 +3,70 @@ import {
   AUTO_OCR_VARIANTS,
   MANUAL_RETRY_VARIANTS,
 } from "@/domain/scan/features/ocr/model/ocr-engine";
-import {
-  combinedConfidence,
-  getOptionCandidates,
-  parseOcrLine,
-} from "@/domain/scan/features/ocr/model/normalize";
 import { buildLineOcrVariants } from "@/domain/scan/features/ocr/model/preprocess";
 import { getOcrEngine } from "@/domain/scan/features/ocr/model/paddle-ocr-engine";
 import type { Option } from "@/shared/lib/data/schemas";
 
-const OCR_MIN_MAPPING_SCORE = 0.62;
 const OCR_MIN_COMBINED_CONFIDENCE = 0.58;
 
 export interface RecognizedLine {
   rawText: string;
   normalizedText: string;
   optionId?: string;
-  valueText?: string;
-  valueNumeric?: number;
   confidence: number;
-  mappingScore: number;
   latencyMs: number;
   variantId: string;
 }
 
-/**
- * 자동 확정 가능한 결과인지 판단한다.
- * 임계값을 낮추면 속도는 빨라지지만, 잘못된 옵션이 조기에 확정될 위험이 커진다.
- */
+function resolveOptionMatch(
+  rawText: string,
+  options: Option[],
+): { optionId?: string } {
+  if (!rawText) {
+    return { optionId: undefined };
+  }
+
+  const compactRawText = rawText.replace(/\s+/g, "");
+
+  for (const option of options) {
+    const base = option.nameKo;
+    const compactBase = option.nameKo.replace(/\s+/g, "");
+    const withIncrease = `${base}증가`;
+    const compactWithIncrease = `${compactBase}증가`;
+    if (
+      rawText === base ||
+      rawText === withIncrease ||
+      compactRawText === compactBase ||
+      compactRawText === compactWithIncrease
+    ) {
+      return { optionId: option.id };
+    }
+  }
+
+  for (const option of options) {
+    const compactOption = option.nameKo.replace(/\s+/g, "");
+    if (
+      rawText.includes(option.nameKo) ||
+      compactRawText.includes(compactOption) ||
+      `${option.nameKo}증가` === rawText ||
+      `${compactOption}증가` === compactRawText
+    ) {
+      return { optionId: option.id };
+    }
+  }
+
+  return { optionId: undefined };
+}
+
 export function isReliableMatch(result: {
   optionId?: string;
-  mappingScore: number;
   confidence: number;
 }) {
   return (
-    Boolean(result.optionId) &&
-    result.mappingScore >= OCR_MIN_MAPPING_SCORE &&
-    result.confidence >= OCR_MIN_COMBINED_CONFIDENCE
+    Boolean(result.optionId) && result.confidence >= OCR_MIN_COMBINED_CONFIDENCE
   );
 }
 
-/**
- * 한 줄 OCR의 orchestration 레이어.
- * 엔진 호출, variant 순서, early-exit, 후처리 매핑이 모두 여기서 만나므로
- * 속도/정확도 트레이드오프를 조정할 때 가장 먼저 보는 진입점이다.
- */
 export async function recognizeBestLine(
   lineCanvas: HTMLCanvasElement,
   options: Option[],
@@ -67,10 +86,7 @@ export async function recognizeBestLine(
     rawText: "",
     normalizedText: "",
     optionId: undefined,
-    valueText: undefined,
-    valueNumeric: undefined,
     confidence: 0,
-    mappingScore: 0,
     latencyMs: 0,
     variantId: "",
     score: -1,
@@ -82,11 +98,8 @@ export async function recognizeBestLine(
       ? AUTO_OCR_FAST_VARIANTS
       : AUTO_OCR_VARIANTS;
 
-  /** 빠른 성공 케이스는 즉시 종료해 전체 3줄 latency를 낮춘다. */
   const shouldEarlyExit = () =>
-    Boolean(best.optionId) &&
-    (isReliableMatch(best) ||
-      (best.mappingScore >= 0.72 && best.confidence >= 0.64));
+    Boolean(best.optionId) && best.confidence >= 0.64;
 
   for (const variantId of preferredVariantIds) {
     const variant = variantById.get(variantId);
@@ -96,28 +109,21 @@ export async function recognizeBestLine(
     const rawText = result.text.trim();
     if (!rawText) continue;
 
-    const parsed = parseOcrLine(rawText);
-    const top = getOptionCandidates(parsed, options, 1)[0];
-    const mappingScore = top?.score ?? 0;
-    const confidence = combinedConfidence(
-      result.confidence * 100,
-      mappingScore,
-    );
+    const { optionId } = resolveOptionMatch(rawText, options);
+    const confidence = Number(result.confidence.toFixed(3));
     const totalScore =
-      confidence + (parsed.normalizedText.length >= 2 ? 0.04 : 0);
+      confidence + (optionId ? 0.08 : 0) + (rawText.length >= 2 ? 0.04 : 0);
 
     if (
       totalScore > best.score ||
-      (totalScore === best.score && mappingScore > best.mappingScore)
+      (totalScore === best.score &&
+        Number(Boolean(optionId)) > Number(Boolean(best.optionId)))
     ) {
       best = {
         rawText,
-        normalizedText: parsed.normalizedText,
-        optionId: top?.optionId,
-        valueText: parsed.valueText,
-        valueNumeric: parsed.valueNumeric,
+        normalizedText: rawText,
+        optionId,
         confidence,
-        mappingScore,
         latencyMs: result.latencyMs,
         variantId: result.variantId,
         score: totalScore,
@@ -131,10 +137,7 @@ export async function recognizeBestLine(
     rawText: best.rawText,
     normalizedText: best.normalizedText,
     optionId: best.optionId,
-    valueText: best.valueText,
-    valueNumeric: best.valueNumeric,
     confidence: best.confidence,
-    mappingScore: best.mappingScore,
     latencyMs: best.latencyMs,
     variantId: best.variantId,
   };

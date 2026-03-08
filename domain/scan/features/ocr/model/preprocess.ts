@@ -81,7 +81,7 @@ function estimateThreshold(data: Uint8ClampedArray): number {
  * threshold/invert의 효과는 게임 UI 대비와 글자 외곽선에 크게 좌우되므로,
  * 정확도 튜닝은 보통 이 함수보다 variant 순서에서 먼저 조정하는 편이 안전하다.
  */
-export function preprocessForOcr(
+function preprocessForOcr(
   source: HTMLCanvasElement,
   preset: PreprocessPreset,
 ): HTMLCanvasElement {

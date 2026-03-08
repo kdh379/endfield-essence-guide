@@ -282,8 +282,6 @@ export default function ScanPage() {
           rawText: best.rawText,
           normalizedText: best.normalizedText,
           optionId: reliable ? best.optionId : undefined,
-          valueText: reliable ? best.valueText : undefined,
-          valueNumeric: reliable ? best.valueNumeric : undefined,
           confidence: best.confidence,
         };
         nextRetry[i] = !reliable;
