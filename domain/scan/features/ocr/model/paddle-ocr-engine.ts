@@ -4,10 +4,8 @@ import type {
   RecognizeLineOptions,
 } from "@/domain/scan/features/ocr/model/ocr-engine";
 
-const MODEL_URL =
-  "https://huggingface.co/monkt/paddleocr-onnx/resolve/main/languages/korean/rec.onnx";
-const DICT_URL =
-  "https://huggingface.co/monkt/paddleocr-onnx/resolve/main/languages/korean/dict.txt";
+const MODEL_URL = "/models/ocr/korean-rec-v1.onnx";
+const DICT_URL = "/models/ocr/korean-dict-v1.txt";
 
 const MODEL_HEIGHT = 48;
 const MODEL_WIDTH = 320;
