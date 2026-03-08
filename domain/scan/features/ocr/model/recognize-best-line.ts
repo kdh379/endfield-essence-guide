@@ -1,15 +1,15 @@
-import { PSM } from "tesseract.js";
-
+import {
+  AUTO_OCR_FAST_VARIANTS,
+  AUTO_OCR_VARIANTS,
+  MANUAL_RETRY_VARIANTS,
+} from "@/domain/scan/features/ocr/model/ocr-engine";
 import {
   combinedConfidence,
   getOptionCandidates,
   parseOcrLine,
 } from "@/domain/scan/features/ocr/model/normalize";
-import {
-  buildLineOcrVariants,
-  preprocessForOcr,
-} from "@/domain/scan/features/ocr/model/preprocess";
-import { recognizeKorean } from "@/domain/scan/features/ocr/model/tesseract";
+import { buildLineOcrVariants } from "@/domain/scan/features/ocr/model/preprocess";
+import { getOcrEngine } from "@/domain/scan/features/ocr/model/paddle-ocr-engine";
 import type { Option } from "@/shared/lib/data/schemas";
 
 const OCR_MIN_MAPPING_SCORE = 0.62;
@@ -23,6 +23,8 @@ export interface RecognizedLine {
   valueNumeric?: number;
   confidence: number;
   mappingScore: number;
+  latencyMs: number;
+  variantId: string;
 }
 
 export function isReliableMatch(result: {
@@ -40,7 +42,18 @@ export function isReliableMatch(result: {
 export async function recognizeBestLine(
   lineCanvas: HTMLCanvasElement,
   options: Option[],
+  config?: {
+    aggressive?: boolean;
+    fastPathOnly?: boolean;
+  },
 ): Promise<RecognizedLine> {
+  const aggressive = config?.aggressive ?? false;
+  const fastPathOnly = config?.fastPathOnly ?? false;
+  const engine = await getOcrEngine();
+  const variantById = new Map(
+    buildLineOcrVariants(lineCanvas).map((variant) => [variant.id, variant]),
+  );
+
   let best: RecognizedLine & { score: number } = {
     rawText: "",
     normalizedText: "",
@@ -49,21 +62,37 @@ export async function recognizeBestLine(
     valueNumeric: undefined,
     confidence: 0,
     mappingScore: 0,
+    latencyMs: 0,
+    variantId: "",
     score: -1,
   };
 
-  const evaluateAttempt = async (attempt: {
-    canvas: HTMLCanvasElement;
-    psm: PSM;
-  }) => {
-    const result = await recognizeKorean(attempt.canvas, attempt.psm);
-    const rawText = (result.lines[0] ?? "").trim();
-    if (!rawText) return;
+  const preferredVariantIds = aggressive
+    ? MANUAL_RETRY_VARIANTS
+    : fastPathOnly
+      ? AUTO_OCR_FAST_VARIANTS
+      : AUTO_OCR_VARIANTS;
+
+  const shouldEarlyExit = () =>
+    Boolean(best.optionId) &&
+    (isReliableMatch(best) ||
+      (best.mappingScore >= 0.72 && best.confidence >= 0.64));
+
+  for (const variantId of preferredVariantIds) {
+    const variant = variantById.get(variantId);
+    if (!variant) continue;
+
+    const result = await engine.recognizeLine(variant.canvas, { variantId });
+    const rawText = result.text.trim();
+    if (!rawText) continue;
 
     const parsed = parseOcrLine(rawText);
     const top = getOptionCandidates(parsed, options, 1)[0];
     const mappingScore = top?.score ?? 0;
-    const confidence = combinedConfidence(result.confidence, mappingScore);
+    const confidence = combinedConfidence(
+      result.confidence * 100,
+      mappingScore,
+    );
     const totalScore =
       confidence + (parsed.normalizedText.length >= 2 ? 0.04 : 0);
 
@@ -79,43 +108,13 @@ export async function recognizeBestLine(
         valueNumeric: parsed.valueNumeric,
         confidence,
         mappingScore,
+        latencyMs: result.latencyMs,
+        variantId: result.variantId,
         score: totalScore,
       };
     }
-  };
 
-  const baseAttempts: Array<{
-    canvas: HTMLCanvasElement;
-    psm: PSM;
-  }> = [
-    { canvas: preprocessForOcr(lineCanvas, "threshold"), psm: PSM.SINGLE_LINE },
-    {
-      canvas: preprocessForOcr(lineCanvas, "highContrast"),
-      psm: PSM.SINGLE_LINE,
-    },
-    { canvas: preprocessForOcr(lineCanvas, "default"), psm: PSM.SINGLE_LINE },
-  ];
-
-  for (const attempt of baseAttempts) {
-    await evaluateAttempt(attempt);
-  }
-
-  if (!isReliableMatch(best)) {
-    const variantById = new Map(
-      buildLineOcrVariants(lineCanvas).map((variant) => [variant.id, variant]),
-    );
-    const fallbackVariants = [
-      variantById.get("text-threshold"),
-      variantById.get("text-highContrast"),
-      variantById.get("full-threshold"),
-    ].flatMap((variant) => (variant ? [variant] : []));
-
-    for (const variant of fallbackVariants) {
-      await evaluateAttempt({ canvas: variant.canvas, psm: PSM.SINGLE_LINE });
-      if (variant.region === "text") {
-        await evaluateAttempt({ canvas: variant.canvas, psm: PSM.SINGLE_WORD });
-      }
-    }
+    if (shouldEarlyExit()) break;
   }
 
   return {
@@ -126,5 +125,7 @@ export async function recognizeBestLine(
     valueNumeric: best.valueNumeric,
     confidence: best.confidence,
     mappingScore: best.mappingScore,
+    latencyMs: best.latencyMs,
+    variantId: best.variantId,
   };
 }

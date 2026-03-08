@@ -41,6 +41,10 @@ interface CaptureSessionState {
   intervalId: number | null;
   frameCanvas: HTMLCanvasElement | null;
   lastSignature: string | null;
+  lastFingerprint: Uint8Array | null;
+  pendingSignature: string | null;
+  pendingFingerprint: Uint8Array | null;
+  pendingDetectedAt: number;
   lastCaptureAt: number;
   isAutoCaptureBusy: boolean;
   borderCache: BorderRect;
@@ -49,7 +53,11 @@ interface CaptureSessionState {
   captureFixedRoi: (source?: "manual" | "auto") => boolean;
 }
 
-const AUTO_CAPTURE_INTERVAL_MS = 120;
+const AUTO_CAPTURE_INTERVAL_MS = 50;
+const SIGNATURE_STABLE_DIFF_THRESHOLD = 10;
+const SIGNATURE_CONFIRM_DIFF_THRESHOLD = 16;
+const SIGNATURE_IMMEDIATE_DIFF_THRESHOLD = 24;
+const SIGNATURE_CONFIRM_WINDOW_MS = 140;
 const DEV_CAPTURE_STORE_KEY = "__scanCaptureDevStore";
 
 interface DevCaptureStore {
@@ -89,6 +97,73 @@ function cropCanvas(
     rect.height,
   );
   return canvas;
+}
+
+function createTraitFingerprint(source: HTMLCanvasElement) {
+  const sampleWidth = 32;
+  const sampleHeight = 24;
+  const canvas = document.createElement("canvas");
+  canvas.width = sampleWidth;
+  canvas.height = sampleHeight;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  if (!ctx) {
+    return {
+      signature: "0",
+      fingerprint: new Uint8Array(),
+    };
+  }
+
+  const cropX = Math.round(source.width * 0.03);
+  const cropY = Math.round(source.height * 0.06);
+  const cropWidth = Math.max(1, Math.round(source.width * 0.74));
+  const cropHeight = Math.max(1, Math.round(source.height * 0.88));
+
+  ctx.drawImage(
+    source,
+    cropX,
+    cropY,
+    cropWidth,
+    cropHeight,
+    0,
+    0,
+    sampleWidth,
+    sampleHeight,
+  );
+  const { data } = ctx.getImageData(0, 0, sampleWidth, sampleHeight);
+  const grayscale = new Uint8Array(sampleWidth * sampleHeight);
+
+  for (let i = 0, p = 0; i < data.length; i += 4, p += 1) {
+    const gray = Math.round(
+      0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2],
+    );
+    grayscale[p] = gray;
+  }
+
+  const hex: string[] = [];
+  for (let i = 0; i < grayscale.length; i += 2) {
+    const left = grayscale[i] ?? 0;
+    const right = grayscale[i + 1] ?? 0;
+    hex.push(
+      ((Math.round(left / 32) << 4) | Math.round(right / 32))
+        .toString(16)
+        .padStart(2, "0"),
+    );
+  }
+
+  return {
+    signature: `${cropWidth}x${cropHeight}:${hex.join("")}`,
+    fingerprint: grayscale,
+  };
+}
+
+function getFingerprintDiff(a: Uint8Array | null, b: Uint8Array | null) {
+  if (!a || !b || a.length !== b.length) return Number.POSITIVE_INFINITY;
+
+  let total = 0;
+  for (let i = 0; i < a.length; i += 1) {
+    total += Math.abs(a[i] - b[i]);
+  }
+  return total / a.length;
 }
 
 function detectGameBorderFromCanvas(
@@ -186,6 +261,10 @@ export function ScreenCapturePanel({
     intervalId: null,
     frameCanvas: null,
     lastSignature: null,
+    lastFingerprint: null,
+    pendingSignature: null,
+    pendingFingerprint: null,
+    pendingDetectedAt: 0,
     lastCaptureAt: 0,
     isAutoCaptureBusy: false,
     borderCache: { top: 0, left: 0, right: 0 },
@@ -332,33 +411,49 @@ export function ScreenCapturePanel({
         height: roi.traitRect.height,
       });
 
+      const { signature, fingerprint } = createTraitFingerprint(traitCanvas);
+
+      if (source === "auto") {
+        const diff = getFingerprintDiff(fingerprint, session.lastFingerprint);
+        if (
+          signature === session.lastSignature ||
+          diff < SIGNATURE_STABLE_DIFF_THRESHOLD
+        ) {
+          session.pendingSignature = null;
+          session.pendingFingerprint = null;
+          session.pendingDetectedAt = 0;
+          return false;
+        }
+
+        const hasImmediateChange = diff >= SIGNATURE_IMMEDIATE_DIFF_THRESHOLD;
+        if (!hasImmediateChange) {
+          const pendingDiff = getFingerprintDiff(
+            fingerprint,
+            session.pendingFingerprint,
+          );
+          const pendingIsFresh =
+            now - session.pendingDetectedAt <= SIGNATURE_CONFIRM_WINDOW_MS;
+          const matchesPending =
+            pendingIsFresh &&
+            pendingDiff < SIGNATURE_STABLE_DIFF_THRESHOLD &&
+            session.pendingSignature === signature;
+
+          if (!matchesPending || diff < SIGNATURE_CONFIRM_DIFF_THRESHOLD) {
+            session.pendingSignature = signature;
+            session.pendingFingerprint = fingerprint;
+            session.pendingDetectedAt = now;
+            return false;
+          }
+        }
+
+        session.pendingSignature = null;
+        session.pendingFingerprint = null;
+        session.pendingDetectedAt = 0;
+      }
+
       const extracted = extractLineRegionsFromTrait(traitCanvas);
       const lineCanvases = extracted.lineCanvases;
       const previewCanvas = composeLinePreview(lineCanvases);
-
-      const signature = lineCanvases
-        .map((lineCanvas) => {
-          const ctx = lineCanvas.getContext("2d", { willReadFrequently: true });
-          if (!ctx) return "0";
-
-          const { data } = ctx.getImageData(
-            0,
-            0,
-            lineCanvas.width,
-            lineCanvas.height,
-          );
-          let sum = 0;
-          const step = Math.max(4, Math.floor(data.length / 128));
-          for (let i = 0; i < data.length; i += step) {
-            sum += data[i] + data[i + 1] + data[i + 2];
-          }
-          return String(sum);
-        })
-        .join("-");
-
-      if (source === "auto" && signature === session.lastSignature) {
-        return false;
-      }
 
       onCaptureReady({
         traitCanvas,
@@ -370,6 +465,7 @@ export function ScreenCapturePanel({
       });
 
       session.lastSignature = signature;
+      session.lastFingerprint = fingerprint;
       session.lastCaptureAt = now;
       setStatus("자동 인식 중입니다...");
       return true;

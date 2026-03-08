@@ -2,6 +2,7 @@
 import { normalizeWithVanillaRules } from "@/domain/scan/features/ocr/model/vanilla-rules";
 
 const STOPWORDS = ["옵션", "효과"];
+const OPTION_ALIAS_CACHE = new WeakMap<Option[], PreparedOption[]>();
 
 export interface ParsedLine {
   rawText: string;
@@ -16,6 +17,12 @@ export interface OptionCandidate {
   aliasScore: number;
   lexicalScore: number;
   valuePatternScore: number;
+}
+
+interface PreparedOption {
+  optionId: string;
+  aliases: string[];
+  optionRuleCompact: string;
 }
 
 export function normalizeOcrText(text: string): string {
@@ -41,6 +48,14 @@ function toCompactKorean(text: string): string {
   return text.replace(/\s+/g, "").replace(/[^\uAC00-\uD7A3]/g, "");
 }
 
+function stripValueTokens(text: string): string {
+  return text
+    .replace(/-?\d+(?:\.\d+)?(?:\s*)(%|pt|s)?/gi, " ")
+    .replace(/[+]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function buildOptionAliases(option: Option): string[] {
   const base = option.nameKo;
   const ruleNorm = normalizeWithVanillaRules(base);
@@ -52,6 +67,21 @@ function buildOptionAliases(option: Option): string[] {
     .filter(Boolean);
 
   return Array.from(new Set(aliases));
+}
+
+function getPreparedOptions(options: Option[]): PreparedOption[] {
+  const cached = OPTION_ALIAS_CACHE.get(options);
+  if (cached) return cached;
+
+  const prepared = options.map((option) => ({
+    optionId: option.id,
+    aliases: buildOptionAliases(option),
+    optionRuleCompact: toCompactKorean(
+      normalizeWithVanillaRules(option.nameKo),
+    ),
+  }));
+  OPTION_ALIAS_CACHE.set(options, prepared);
+  return prepared;
 }
 
 function levenshtein(a: string, b: string): number {
@@ -135,43 +165,63 @@ export function getOptionCandidates(
   options: Option[],
   topN = 5,
 ): OptionCandidate[] {
+  const rawRuleNormalized = normalizeOcrText(
+    normalizeWithVanillaRules(parsed.rawText),
+  );
+  const nameOnlyNormalized = normalizeOcrText(stripValueTokens(parsed.rawText));
   const normalizedVariants = Array.from(
     new Set(
       [
         parsed.normalizedText,
-        normalizeOcrText(normalizeWithVanillaRules(parsed.rawText)),
+        rawRuleNormalized,
+        nameOnlyNormalized,
+        normalizeOcrText(
+          normalizeWithVanillaRules(stripValueTokens(parsed.rawText)),
+        ),
       ].filter(Boolean),
     ),
   );
 
-  const scored = options.map((option) => {
-    const aliases = buildOptionAliases(option);
+  const scored = getPreparedOptions(options).map((option) => {
     let bestAliasScore = 0;
     let bestLexicalScore = 0;
     let bestValuePatternScore = 0;
     let bestScore = -1;
 
-    const optionRuleCompact = toCompactKorean(
-      normalizeWithVanillaRules(option.nameKo),
-    );
     const variants =
       normalizedVariants.length > 0
         ? normalizedVariants
         : [parsed.normalizedText];
     for (const variant of variants) {
-      const aliasScore = scoreAlias(variant, aliases);
-      const lexicalScore = scoreLexical(variant, aliases);
+      const aliasScore = scoreAlias(variant, option.aliases);
+      const lexicalScore = scoreLexical(variant, option.aliases);
       const valuePatternScore = scoreValuePattern(variant);
       const parsedCompact = toCompactKorean(variant);
       const ruleBonus =
         parsedCompact &&
-        optionRuleCompact &&
-        (parsedCompact === optionRuleCompact ||
-          optionRuleCompact.includes(parsedCompact))
+        option.optionRuleCompact &&
+        (parsedCompact === option.optionRuleCompact ||
+          option.optionRuleCompact.includes(parsedCompact))
           ? 0.08
           : 0;
+      const exactRuleBonus =
+        rawRuleNormalized && option.aliases.includes(rawRuleNormalized)
+          ? 0.24
+          : 0;
+      const shortNameBonus =
+        nameOnlyNormalized &&
+        nameOnlyNormalized.length <= 3 &&
+        option.aliases.includes(nameOnlyNormalized)
+          ? 0.16
+          : 0;
 
-      const score = aliasScore + lexicalScore + valuePatternScore + ruleBonus;
+      const score =
+        aliasScore +
+        lexicalScore +
+        valuePatternScore +
+        ruleBonus +
+        exactRuleBonus +
+        shortNameBonus;
       if (score > bestScore) {
         bestScore = score;
         bestAliasScore = aliasScore;
@@ -181,7 +231,7 @@ export function getOptionCandidates(
     }
 
     return {
-      optionId: option.id,
+      optionId: option.optionId,
       score: bestScore,
       aliasScore: bestAliasScore,
       lexicalScore: bestLexicalScore,

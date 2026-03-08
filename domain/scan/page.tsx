@@ -23,11 +23,15 @@ import type {
 } from "@/shared/lib/data/schemas";
 import { determineLockReason } from "@/domain/scan/features/matching/model/rules";
 import { matchWeaponsByTrait } from "@/domain/scan/features/matching/model/scorer";
+import { AUTO_OCR_TARGET_MS } from "@/domain/scan/features/ocr/model/ocr-engine";
 import {
   isReliableMatch,
   recognizeBestLine,
 } from "@/domain/scan/features/ocr/model/recognize-best-line";
-import { terminateWorker } from "@/domain/scan/features/ocr/model/tesseract";
+import {
+  disposeOcrEngine,
+  warmupOcrEngine,
+} from "@/domain/scan/features/ocr/model/paddle-ocr-engine";
 import Image from "next/image";
 
 const AUTO_OCR_MIN_INTERVAL_MS = 120;
@@ -145,6 +149,8 @@ export default function ScanPage() {
   const lastAutoOcrAtRef = useRef(0);
   const lastAutoSignatureRef = useRef<string | null>(null);
   const latestCaptureSignatureRef = useRef<string | null>(null);
+  const autoOcrLatencyHistoryRef = useRef<number[]>([]);
+  const autoFastPathOnlyRef = useRef(false);
   const lastCommittedLinesRef =
     useRef<[ScannedTraitLine, ScannedTraitLine, ScannedTraitLine]>(
       blankLines(),
@@ -163,6 +169,9 @@ export default function ScanPage() {
           dataVersion: manifest.dataVersion,
         });
         setStatus("게임 화면을 공유하면 자동 인식을 시작합니다.");
+        void warmupOcrEngine().catch((error) => {
+          console.error(error);
+        });
       } catch (error) {
         console.error(error);
         setLoadingError("정적 데이터 JSON 로드에 실패했습니다.");
@@ -171,7 +180,7 @@ export default function ScanPage() {
 
     void run();
     return () => {
-      void terminateWorker();
+      void disposeOcrEngine();
     };
   }, []);
 
@@ -227,7 +236,7 @@ export default function ScanPage() {
         ...lastCommittedLinesRef.current,
       ] as ScannedTraitLine[];
       const nextRetry = [...lineNeedsRetry] as [boolean, boolean, boolean];
-      const failedIndexes: number[] = [];
+      let totalLatencyMs = 0;
 
       for (let i = 0; i < targetLineCanvases.length; i += 1) {
         if (targetSet && !targetSet.has(i)) continue;
@@ -235,7 +244,12 @@ export default function ScanPage() {
         const best = await recognizeBestLine(
           targetLineCanvases[i],
           data.options,
+          {
+            aggressive: Boolean(targetIndexes),
+            fastPathOnly: !targetIndexes && autoFastPathOnlyRef.current,
+          },
         );
+        totalLatencyMs += best.latencyMs;
         const hasText =
           (best.normalizedText || best.rawText).trim().length >= 2;
         const reliable = hasText && isReliableMatch(best);
@@ -248,7 +262,6 @@ export default function ScanPage() {
             confidence: 0,
           };
           nextRetry[i] = true;
-          failedIndexes.push(i);
           continue;
         }
 
@@ -262,30 +275,6 @@ export default function ScanPage() {
           confidence: best.confidence,
         };
         nextRetry[i] = !reliable;
-        if (!reliable) failedIndexes.push(i);
-      }
-
-      // Retry only failed lines once to reduce OCR cost while improving UX.
-      for (const index of failedIndexes) {
-        const retryBest = await recognizeBestLine(
-          targetLineCanvases[index],
-          data.options,
-        );
-        const hasText =
-          (retryBest.normalizedText || retryBest.rawText).trim().length >= 2;
-        const reliable = hasText && isReliableMatch(retryBest);
-        if (!reliable) continue;
-
-        nextLines[index] = {
-          lineNo: (index + 1) as 1 | 2 | 3,
-          rawText: retryBest.rawText,
-          normalizedText: retryBest.normalizedText,
-          optionId: retryBest.optionId,
-          valueText: retryBest.valueText,
-          valueNumeric: retryBest.valueNumeric,
-          confidence: retryBest.confidence,
-        };
-        nextRetry[index] = false;
       }
 
       const typedLines = nextLines as [
@@ -313,10 +302,25 @@ export default function ScanPage() {
       );
       setMatches(matched);
       setIsMatchLoading(false);
+      if (!targetIndexes) {
+        const history = autoOcrLatencyHistoryRef.current;
+        history.push(totalLatencyMs);
+        if (history.length > 30) history.shift();
+
+        const sorted = [...history].sort((a, b) => a - b);
+        const p95Index = Math.max(0, Math.ceil(sorted.length * 0.95) - 1);
+        const p95 = sorted[p95Index] ?? totalLatencyMs;
+        autoFastPathOnlyRef.current =
+          history.length >= 5 && p95 > AUTO_OCR_TARGET_MS;
+      }
       if (nextRetry.some(Boolean)) {
-        setStatus("일부 줄 인식 실패: 실패 줄만 재인식해 주세요.");
+        setStatus(
+          `일부 줄 인식 실패: 실패 줄만 재인식해 주세요. (${Math.round(totalLatencyMs)}ms)`,
+        );
       } else {
-        setStatus("자동 OCR이 완료되었습니다.");
+        setStatus(
+          `자동 OCR이 완료되었습니다. (${Math.round(totalLatencyMs)}ms)`,
+        );
       }
       return true;
     },
