@@ -1,11 +1,10 @@
-﻿{
+{
   "dataVersion": "2026.03.0",
   "items": [
     {
       "id": "wpn_6_001",
       "nameKo": "과거의 일품",
       "rarity": 6,
-      "iconKey": "wpn_6_001",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_001.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -14,16 +13,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_002", "opt_sub_005", "opt_skill_013"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_002",
+            "opt_sub_005",
+            "opt_skill_013"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_002",
       "nameKo": "기사도 정신",
       "rarity": 6,
-      "iconKey": "wpn_6_002",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_002.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -32,16 +33,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_002", "opt_sub_005", "opt_skill_010"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_002",
+            "opt_sub_005",
+            "opt_skill_010"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_003",
       "nameKo": "끝없는 방랑",
       "rarity": 6,
-      "iconKey": "wpn_6_003",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_003.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -50,16 +53,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_002", "opt_sub_001", "opt_skill_014"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_002",
+            "opt_sub_001",
+            "opt_skill_014"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_004",
       "nameKo": "망각",
       "rarity": 6,
-      "iconKey": "wpn_6_004",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_004.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -68,16 +73,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_004", "opt_sub_007", "opt_skill_008"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_004",
+            "opt_sub_007",
+            "opt_skill_008"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_005",
       "nameKo": "모범",
       "rarity": 6,
-      "iconKey": "wpn_6_005",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_005.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -86,16 +93,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_003", "opt_sub_001", "opt_skill_009"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_003",
+            "opt_sub_001",
+            "opt_skill_009"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_006",
       "nameKo": "바다와 별의 꿈",
       "rarity": 6,
-      "iconKey": "wpn_6_006",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_006.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -104,16 +113,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_004", "opt_sub_012", "opt_skill_002"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_004",
+            "opt_sub_012",
+            "opt_skill_002"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_007",
       "nameKo": "백야의 별",
       "rarity": 6,
-      "iconKey": "wpn_6_007",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_007.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -122,16 +133,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_003", "opt_sub_006", "opt_skill_002"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_003",
+            "opt_sub_006",
+            "opt_skill_002"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_008",
       "nameKo": "부요",
       "rarity": 6,
-      "iconKey": "wpn_6_008",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_008.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -140,16 +153,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_003", "opt_sub_011", "opt_skill_008"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_003",
+            "opt_sub_011",
+            "opt_skill_008"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_009",
       "nameKo": "분쇄의 군주",
       "rarity": 6,
-      "iconKey": "wpn_6_009",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_009.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -158,16 +173,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_005", "opt_sub_011", "opt_skill_006"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_005",
+            "opt_sub_011",
+            "opt_skill_006"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_010",
       "nameKo": "사명의 길",
       "rarity": 6,
-      "iconKey": "wpn_6_010",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_010.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -176,16 +193,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_002", "opt_sub_002", "opt_skill_012"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_002",
+            "opt_sub_002",
+            "opt_skill_012"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_011",
       "nameKo": "산의 지배자",
       "rarity": 6,
-      "iconKey": "wpn_6_011",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_011.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -194,16 +213,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_001", "opt_sub_004", "opt_skill_013"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_001",
+            "opt_sub_004",
+            "opt_skill_013"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_012",
       "nameKo": "쐐기",
       "rarity": 6,
-      "iconKey": "wpn_6_012",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_012.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -212,16 +233,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_003", "opt_sub_011", "opt_skill_002"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_003",
+            "opt_sub_011",
+            "opt_skill_002"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_013",
       "nameKo": "암흑의 횃불",
       "rarity": 6,
-      "iconKey": "wpn_6_013",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_013.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -230,16 +253,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_004", "opt_sub_008", "opt_skill_002"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_004",
+            "opt_sub_008",
+            "opt_skill_002"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_014",
       "nameKo": "예술의 폭군",
       "rarity": 6,
-      "iconKey": "wpn_6_014",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_014.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -248,16 +273,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_004", "opt_sub_011", "opt_skill_003"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_004",
+            "opt_sub_011",
+            "opt_skill_003"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_015",
       "nameKo": "용사",
       "rarity": 6,
-      "iconKey": "wpn_6_015",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_015.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -266,16 +293,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_001", "opt_sub_004", "opt_skill_004"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_001",
+            "opt_sub_004",
+            "opt_skill_004"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_016",
       "nameKo": "용조의 불꽃",
       "rarity": 6,
-      "iconKey": "wpn_6_016",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_016.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -284,16 +313,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_004", "opt_sub_001", "opt_skill_008"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_004",
+            "opt_sub_001",
+            "opt_skill_008"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_017",
       "nameKo": "위대한 이름",
       "rarity": 6,
-      "iconKey": "wpn_6_017",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_017.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -302,16 +333,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_003", "opt_sub_004", "opt_skill_011"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_003",
+            "opt_sub_004",
+            "opt_skill_011"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_018",
       "nameKo": "작품: 침식 흔적",
       "rarity": 6,
-      "iconKey": "wpn_6_018",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_018.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -320,16 +353,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_002", "opt_sub_009", "opt_skill_009"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_002",
+            "opt_sub_009",
+            "opt_skill_009"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_019",
       "nameKo": "장대한 염원",
       "rarity": 6,
-      "iconKey": "wpn_6_019",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_019.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -338,16 +373,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_001", "opt_sub_001", "opt_skill_002"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_001",
+            "opt_sub_001",
+            "opt_skill_002"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_020",
       "nameKo": "천둥의 흔적",
       "rarity": 6,
-      "iconKey": "wpn_6_020",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_020.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -356,16 +393,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_005", "opt_sub_005", "opt_skill_010"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_005",
+            "opt_sub_005",
+            "opt_skill_010"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_021",
       "nameKo": "클래니벌",
       "rarity": 6,
-      "iconKey": "wpn_6_021",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_021.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -374,16 +413,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_003", "opt_sub_007", "opt_skill_002"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_003",
+            "opt_sub_007",
+            "opt_skill_002"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_022",
       "nameKo": "테르밋 커터",
       "rarity": 6,
-      "iconKey": "wpn_6_022",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_022.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -392,16 +433,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_002", "opt_sub_001", "opt_skill_014"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_002",
+            "opt_sub_001",
+            "opt_skill_014"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_023",
       "nameKo": "폭발 유닛",
       "rarity": 6,
-      "iconKey": "wpn_6_023",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_023.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -410,16 +453,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_003", "opt_sub_006", "opt_skill_005"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_003",
+            "opt_sub_006",
+            "opt_skill_005"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_024",
       "nameKo": "항로의 개척자",
       "rarity": 6,
-      "iconKey": "wpn_6_024",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_024.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -428,16 +473,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_004", "opt_sub_003", "opt_skill_002"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_004",
+            "opt_sub_003",
+            "opt_skill_002"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_025",
       "nameKo": "헤라펜거",
       "rarity": 6,
-      "iconKey": "wpn_6_025",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_025.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -446,16 +493,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_005", "opt_sub_001", "opt_skill_005"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_005",
+            "opt_sub_001",
+            "opt_skill_005"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_6_026",
       "nameKo": "J.E.T.",
       "rarity": 6,
-      "iconKey": "wpn_6_026",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_6_026.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -464,16 +513,38 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_003", "opt_sub_001", "opt_skill_009"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_003",
+            "opt_sub_001",
+            "opt_skill_009"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "wpn_6_027",
+      "nameKo": "반항",
+      "rarity": 6,
+      "iconUrl": "/images/weapons/v2026.03.0/wpn_6_027.png",
+      "weaponOptionSlots": {
+        "base": 1,
+        "sub": 1,
+        "skill": 1
+      },
+      "weaponBuildMeta": {
+        "validTripleOptionSets": [
+          [
+            "opt_base_001",
+            "opt_sub_001",
+            "opt_skill_005"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_001",
       "nameKo": "강철의 여운",
       "rarity": 5,
-      "iconKey": "wpn_5_001",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_001.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -482,16 +553,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_001", "opt_sub_004", "opt_skill_004"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_001",
+            "opt_sub_004",
+            "opt_skill_004"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_002",
       "nameKo": "검은 추적자",
       "rarity": 5,
-      "iconKey": "wpn_5_002",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_002.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -500,16 +573,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_005", "opt_sub_002", "opt_skill_005"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_005",
+            "opt_sub_002",
+            "opt_skill_005"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_003",
       "nameKo": "고대의 강줄기",
       "rarity": 5,
-      "iconKey": "wpn_5_003",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_003.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -518,16 +593,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_005", "opt_sub_006", "opt_skill_011"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_005",
+            "opt_sub_006",
+            "opt_skill_011"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_004",
       "nameKo": "린수를 찾아서 3.0",
       "rarity": 5,
-      "iconKey": "wpn_5_004",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_004.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -536,16 +613,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_005", "opt_sub_003", "opt_skill_009"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_005",
+            "opt_sub_003",
+            "opt_skill_009"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_005",
       "nameKo": "망자의 노래",
       "rarity": 5,
-      "iconKey": "wpn_5_005",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_005.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -554,16 +633,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_004", "opt_sub_001", "opt_skill_008"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_004",
+            "opt_sub_001",
+            "opt_skill_008"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_006",
       "nameKo": "무가내하",
       "rarity": 5,
-      "iconKey": "wpn_5_006",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_006.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -572,16 +653,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_002", "opt_sub_002", "opt_skill_007"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_002",
+            "opt_sub_002",
+            "opt_skill_007"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_007",
       "nameKo": "불사의 성주",
       "rarity": 5,
-      "iconKey": "wpn_5_007",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_007.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -590,16 +673,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_004", "opt_sub_002", "opt_skill_007"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_004",
+            "opt_sub_002",
+            "opt_skill_007"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_008",
       "nameKo": "선교의 자유",
       "rarity": 5,
-      "iconKey": "wpn_5_008",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_008.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -608,16 +693,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_002", "opt_sub_012", "opt_skill_010"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_002",
+            "opt_sub_012",
+            "opt_skill_010"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_009",
       "nameKo": "숭배의 시선",
       "rarity": 5,
-      "iconKey": "wpn_5_009",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_009.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -626,16 +713,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_001", "opt_sub_004", "opt_skill_008"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_001",
+            "opt_sub_004",
+            "opt_skill_008"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_010",
       "nameKo": "십이문",
       "rarity": 5,
-      "iconKey": "wpn_5_010",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_010.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -644,16 +733,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_001", "opt_sub_001", "opt_skill_002"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_001",
+            "opt_sub_001",
+            "opt_skill_002"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_011",
       "nameKo": "이성적인 작별",
       "rarity": 5,
-      "iconKey": "wpn_5_011",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_011.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -662,16 +753,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_005", "opt_sub_008", "opt_skill_012"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_005",
+            "opt_sub_008",
+            "opt_skill_012"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_012",
       "nameKo": "작품: 중생",
       "rarity": 5,
-      "iconKey": "wpn_5_012",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_012.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -680,16 +773,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_001", "opt_sub_007", "opt_skill_002"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_001",
+            "opt_sub_007",
+            "opt_skill_002"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_013",
       "nameKo": "중심력",
       "rarity": 5,
-      "iconKey": "wpn_5_013",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_013.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -698,16 +793,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_002", "opt_sub_010", "opt_skill_009"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_002",
+            "opt_sub_010",
+            "opt_skill_009"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_014",
       "nameKo": "최후의 메아리",
       "rarity": 5,
-      "iconKey": "wpn_5_014",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_014.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -716,16 +813,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_005", "opt_sub_005", "opt_skill_010"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_005",
+            "opt_sub_005",
+            "opt_skill_010"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_015",
       "nameKo": "키메라의 정의",
       "rarity": 5,
-      "iconKey": "wpn_5_015",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_015.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -734,16 +833,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_005", "opt_sub_002", "opt_skill_011"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_005",
+            "opt_sub_002",
+            "opt_skill_011"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_016",
       "nameKo": "황무지의 방랑자",
       "rarity": 5,
-      "iconKey": "wpn_5_016",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_016.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -752,16 +853,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_004", "opt_sub_010", "opt_skill_002"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_004",
+            "opt_sub_010",
+            "opt_skill_002"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_017",
       "nameKo": "O.B.J. 벨로시투스",
       "rarity": 5,
-      "iconKey": "wpn_5_017",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_017.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -770,16 +873,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_001", "opt_sub_002", "opt_skill_005"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_001",
+            "opt_sub_002",
+            "opt_skill_005"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_018",
       "nameKo": "O.B.J. 스파이크",
       "rarity": 5,
-      "iconKey": "wpn_5_018",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_018.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -788,16 +893,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_002", "opt_sub_004", "opt_skill_002"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_002",
+            "opt_sub_004",
+            "opt_skill_002"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_019",
       "nameKo": "O.B.J. 아츠 아이덴티티",
       "rarity": 5,
-      "iconKey": "wpn_5_019",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_019.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -806,16 +913,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_004", "opt_sub_006", "opt_skill_012"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_004",
+            "opt_sub_006",
+            "opt_skill_012"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_020",
       "nameKo": "O.B.J. 엣지 오브 라이트",
       "rarity": 5,
-      "iconKey": "wpn_5_020",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_020.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -824,16 +933,18 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_001", "opt_sub_001", "opt_skill_014"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_001",
+            "opt_sub_001",
+            "opt_skill_014"
+          ]
+        ]
       }
     },
     {
       "id": "wpn_5_021",
       "nameKo": "O.B.J. 헤비 버든",
       "rarity": 5,
-      "iconKey": "wpn_5_021",
       "iconUrl": "/images/weapons/v2026.03.0/wpn_5_021.png",
       "weaponOptionSlots": {
         "base": 1,
@@ -842,9 +953,12 @@
       },
       "weaponBuildMeta": {
         "validTripleOptionSets": [
-          ["opt_base_005", "opt_sub_005", "opt_skill_013"]
-        ],
-        "sourceRefs": ["ryon-gi.github.io/db.js"]
+          [
+            "opt_base_005",
+            "opt_sub_005",
+            "opt_skill_013"
+          ]
+        ]
       }
     }
   ]
