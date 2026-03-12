@@ -1,7 +1,8 @@
-﻿"use client";
+"use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
+import type { Option, StaticGameData } from "@/shared/lib/data/schemas";
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { ScrollArea } from "@/shared/ui/scroll-area";
@@ -20,22 +21,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui/table";
-import { loadManifest, loadStaticData } from "@/shared/lib/data/loader";
-import type {
-  Option,
-  ThreatZone,
-  ThreatZoneOptionPool,
-  Weapon,
-} from "@/shared/lib/data/schemas";
 
 type TabKey = "weapon" | "option" | "zone";
 
-interface LoadedData {
-  options: Option[];
-  weapons: Weapon[];
-  threatZones: ThreatZone[];
-  threatZonePool: ThreatZoneOptionPool[];
-  dataVersion: string;
+interface FarmPageProps {
+  initialData: StaticGameData;
 }
 
 function categoryLabel(category: Option["category"]) {
@@ -44,78 +34,61 @@ function categoryLabel(category: Option["category"]) {
   return "Skill";
 }
 
-export default function FarmPage() {
+function buildZoneOptionSet(zone: StaticGameData["threatZones"][number]) {
+  return new Set([
+    ...(zone.essencePool?.base ?? []),
+    ...(zone.essencePool?.sub ?? []),
+    ...(zone.essencePool?.skill ?? []),
+  ]);
+}
+
+export default function FarmPage({ initialData }: FarmPageProps) {
   const [tab, setTab] = useState<TabKey>("weapon");
-  const [data, setData] = useState<LoadedData | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [selectedWeaponId, setSelectedWeaponId] = useState<string>("");
   const [selectedOptionId, setSelectedOptionId] = useState<string>("");
   const [selectedZoneId, setSelectedZoneId] = useState<string>("");
 
-  useEffect(() => {
-    const run = async () => {
-      try {
-        const manifest = await loadManifest();
-        const staticData = await loadStaticData(manifest.dataVersion);
-        setData({
-          options: staticData.options,
-          weapons: staticData.weapons,
-          threatZones: staticData.threatZones,
-          threatZonePool: staticData.threatZonePool,
-          dataVersion: manifest.dataVersion,
-        });
-      } catch (loadError) {
-        console.error(loadError);
-        setError("Failed to load farming recommendation data.");
-      }
-    };
-    void run();
-  }, []);
+  const effectiveWeaponId =
+    selectedWeaponId || initialData.weapons[0]?.id || "";
+  const effectiveOptionId =
+    selectedOptionId || initialData.options[0]?.id || "";
+  const effectiveZoneId =
+    selectedZoneId || initialData.threatZones[0]?.id || "";
 
-  const effectiveWeaponId = selectedWeaponId || data?.weapons[0]?.id || "";
-  const effectiveOptionId = selectedOptionId || data?.options[0]?.id || "";
-  const effectiveZoneId = selectedZoneId || data?.threatZones[0]?.id || "";
-
-  const zoneById = useMemo(
-    () => new Map((data?.threatZones ?? []).map((zone) => [zone.id, zone])),
-    [data?.threatZones],
-  );
-
-  const zoneOptionSetByZone = useMemo(() => {
-    const map = new Map<string, Set<string>>();
-    for (const row of data?.threatZonePool ?? []) {
-      if (!map.has(row.zoneId)) map.set(row.zoneId, new Set());
-      map.get(row.zoneId)?.add(row.optionId);
-    }
-    return map;
-  }, [data?.threatZonePool]);
-
-  const tripleByWeapon = useMemo(
+  const zoneOptionSetByZone = useMemo(
     () =>
       new Map(
-        (data?.weapons ?? []).map((weapon) => [
-          weapon.id,
-          [[weapon.essence.base, weapon.essence.sub, weapon.essence.skill]],
+        initialData.threatZones.map((zone) => [
+          zone.id,
+          buildZoneOptionSet(zone),
         ]),
       ),
-    [data?.weapons],
+    [initialData.threatZones],
+  );
+
+  const essenceByWeapon = useMemo(
+    () =>
+      new Map(
+        initialData.weapons.map((weapon) => [
+          weapon.id,
+          [weapon.essence.base, weapon.essence.sub, weapon.essence.skill],
+        ]),
+      ),
+    [initialData.weapons],
   );
 
   const recommendedZonesForSelectedWeapon = useMemo(() => {
-    if (!data || !effectiveWeaponId) return [];
-    const triples = tripleByWeapon.get(effectiveWeaponId) ?? [];
-    if (triples.length === 0) return [];
+    if (!effectiveWeaponId) return [];
+    const essence = essenceByWeapon.get(effectiveWeaponId) ?? [];
+    if (essence.length === 0) return [];
 
-    return data.threatZones
+    return initialData.threatZones
       .map((zone) => {
         const optionSet = zoneOptionSetByZone.get(zone.id) ?? new Set<string>();
-        let bestMatchCount = 0;
-        for (const triple of triples) {
-          const count = triple.filter((optionId) =>
-            optionSet.has(optionId),
-          ).length;
-          if (count > bestMatchCount) bestMatchCount = count;
-        }
+        const bestMatchCount = essence.filter((optionId) =>
+          optionSet.has(optionId),
+        ).length;
+
         return {
           zone,
           bestMatchCount,
@@ -129,36 +102,52 @@ export default function FarmPage() {
           b.score - a.score ||
           a.zone.nameKo.localeCompare(b.zone.nameKo),
       );
-  }, [data, effectiveWeaponId, tripleByWeapon, zoneOptionSetByZone]);
+  }, [
+    effectiveWeaponId,
+    essenceByWeapon,
+    initialData.threatZones,
+    zoneOptionSetByZone,
+  ]);
 
   const recommendedZonesForSelectedOption = useMemo(() => {
-    if (!data || !effectiveOptionId) return [];
-    return data.threatZonePool
-      .filter((row) => row.optionId === effectiveOptionId)
-      .map((row) => ({
-        zone: zoneById.get(row.zoneId),
-        weight: row.weight ?? 0,
-        category: row.category,
-        sourceConfidence: row.sourceConfidence,
-      }))
-      .filter((row) => Boolean(row.zone))
-      .sort((a, b) => b.weight - a.weight);
-  }, [data, effectiveOptionId, zoneById]);
+    if (!effectiveOptionId) return [];
+
+    return initialData.threatZones
+      .map((zone) => {
+        if (zone.essencePool?.base?.includes(effectiveOptionId)) {
+          return { zone, category: "base" as const };
+        }
+        if (zone.essencePool?.sub?.includes(effectiveOptionId)) {
+          return { zone, category: "sub" as const };
+        }
+        if (zone.essencePool?.skill?.includes(effectiveOptionId)) {
+          return { zone, category: "skill" as const };
+        }
+        return null;
+      })
+      .filter(
+        (
+          row,
+        ): row is {
+          zone: StaticGameData["threatZones"][number];
+          category: Option["category"];
+        } => Boolean(row),
+      )
+      .sort((a, b) => a.zone.nameKo.localeCompare(b.zone.nameKo));
+  }, [effectiveOptionId, initialData.threatZones]);
 
   const recommendedWeaponsForSelectedZone = useMemo(() => {
-    if (!data || !effectiveZoneId) return [];
+    if (!effectiveZoneId) return [];
+
     const optionSet =
       zoneOptionSetByZone.get(effectiveZoneId) ?? new Set<string>();
-    return data.weapons
+
+    return initialData.weapons
       .map((weapon) => {
-        const triples = tripleByWeapon.get(weapon.id) ?? [];
-        let bestMatchCount = 0;
-        for (const triple of triples) {
-          const count = triple.filter((optionId) =>
-            optionSet.has(optionId),
-          ).length;
-          if (count > bestMatchCount) bestMatchCount = count;
-        }
+        const essence = essenceByWeapon.get(weapon.id) ?? [];
+        const bestMatchCount = essence.filter((optionId) =>
+          optionSet.has(optionId),
+        ).length;
         return { weapon, bestMatchCount, score: bestMatchCount / 3 };
       })
       .filter((row) => row.bestMatchCount > 0)
@@ -168,23 +157,12 @@ export default function FarmPage() {
           b.score - a.score ||
           a.weapon.nameKo.localeCompare(b.weapon.nameKo),
       );
-  }, [data, effectiveZoneId, tripleByWeapon, zoneOptionSetByZone]);
-
-  if (error) {
-    return (
-      <main className="mx-auto max-w-6xl p-6 text-sm text-red-600">
-        {error}
-      </main>
-    );
-  }
-
-  if (!data) {
-    return (
-      <main className="mx-auto max-w-6xl p-6 text-sm text-muted-foreground">
-        Loading farming recommendation data...
-      </main>
-    );
-  }
+  }, [
+    effectiveZoneId,
+    essenceByWeapon,
+    initialData.weapons,
+    zoneOptionSetByZone,
+  ]);
 
   return (
     <main className="mx-auto min-h-screen max-w-7xl space-y-4 p-4 pb-10 md:p-6">
@@ -198,7 +176,7 @@ export default function FarmPage() {
             </p>
           </div>
           <Badge variant="outline" className="border-primary/40 text-primary">
-            Data v{data.dataVersion}
+            Data v{initialData.dataVersion}
           </Badge>
         </div>
       </section>
@@ -246,7 +224,7 @@ export default function FarmPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <Select
-              items={data.weapons.map((weapon) => ({
+              items={initialData.weapons.map((weapon) => ({
                 label: weapon.nameKo,
                 value: weapon.id,
               }))}
@@ -257,7 +235,7 @@ export default function FarmPage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {data.weapons.map((weapon) => (
+                {initialData.weapons.map((weapon) => (
                   <SelectItem key={weapon.id} value={weapon.id}>
                     {weapon.nameKo}
                   </SelectItem>
@@ -311,7 +289,7 @@ export default function FarmPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <Select
-              items={data.options.map((option) => ({
+              items={initialData.options.map((option) => ({
                 label: option.nameKo,
                 value: option.id,
               }))}
@@ -322,7 +300,7 @@ export default function FarmPage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {data.options.map((option) => (
+                {initialData.options.map((option) => (
                   <SelectItem key={option.id} value={option.id}>
                     {option.nameKo}
                   </SelectItem>
@@ -335,15 +313,13 @@ export default function FarmPage() {
                   <TableRow>
                     <TableHead>Zone</TableHead>
                     <TableHead>Category</TableHead>
-                    <TableHead className="text-right">Weight</TableHead>
-                    <TableHead className="text-right">Confidence</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {recommendedZonesForSelectedOption.length === 0 && (
                     <TableRow>
                       <TableCell
-                        colSpan={4}
+                        colSpan={2}
                         className="text-center text-muted-foreground"
                       >
                         No recommended zones for this option.
@@ -351,15 +327,9 @@ export default function FarmPage() {
                     </TableRow>
                   )}
                   {recommendedZonesForSelectedOption.map((row) => (
-                    <TableRow key={`${row.zone?.id}-${row.category}`}>
-                      <TableCell>{row.zone?.nameKo}</TableCell>
+                    <TableRow key={`${row.zone.id}-${row.category}`}>
+                      <TableCell>{row.zone.nameKo}</TableCell>
                       <TableCell>{categoryLabel(row.category)}</TableCell>
-                      <TableCell className="text-right text-primary">
-                        {row.weight.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="text-right text-muted-foreground">
-                        {row.sourceConfidence}
-                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -376,7 +346,7 @@ export default function FarmPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <Select
-              items={data.threatZones.map((zone) => ({
+              items={initialData.threatZones.map((zone) => ({
                 label: zone.nameKo,
                 value: zone.id,
               }))}
@@ -387,7 +357,7 @@ export default function FarmPage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {data.threatZones.map((zone) => (
+                {initialData.threatZones.map((zone) => (
                   <SelectItem key={zone.id} value={zone.id}>
                     {zone.nameKo}
                   </SelectItem>

@@ -25,14 +25,11 @@ export interface ThreatZone {
   nameKo: string;
   type: "threat" | "event" | "boss";
   difficultyTags: string[];
-}
-
-export interface ThreatZoneOptionPool {
-  zoneId: string;
-  category: OptionCategory;
-  optionId: string;
-  weight?: number;
-  sourceConfidence: number;
+  essencePool: {
+    base: string[];
+    sub: string[];
+    skill: string[];
+  };
 }
 
 export interface ScannedTraitLine {
@@ -91,4 +88,11 @@ export interface DataManifest {
 export interface VersionedItems<T> {
   dataVersion: DataVersion;
   items: T[];
+}
+
+export interface StaticGameData {
+  dataVersion: string;
+  options: Option[];
+  weapons: Weapon[];
+  threatZones: ThreatZone[];
 }

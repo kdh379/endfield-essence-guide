@@ -9,12 +9,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Progress } from "@/shared/ui/progress";
 import { Separator } from "@/shared/ui/separator";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { loadManifest, loadStaticData } from "@/shared/lib/data/loader";
 import { db } from "@/shared/lib/db/dexie";
 import type {
   Option,
   ScannedTrait,
   ScannedTraitLine,
+  StaticGameData,
   Weapon,
 } from "@/shared/lib/data/schemas";
 import { determineLockReason } from "@/domain/scan/features/matching/model/rules";
@@ -33,6 +33,10 @@ interface LoadedData {
   options: Option[];
   weapons: Weapon[];
   dataVersion: string;
+}
+
+interface ScanPageProps {
+  initialData: Pick<StaticGameData, "dataVersion" | "options" | "weapons">;
 }
 
 interface CapturePayload {
@@ -107,9 +111,8 @@ function getLineDisplayText(
   return line.rawText || line.normalizedText || "-";
 }
 
-export default function ScanPage() {
-  const [data, setData] = useState<LoadedData | null>(null);
-  const [loadingError, setLoadingError] = useState<string | null>(null);
+export default function ScanPage({ initialData }: ScanPageProps) {
+  const [data] = useState<LoadedData>(initialData);
   const [traitPreviewUrl, setTraitPreviewUrl] = useState<string | null>(null);
   const [lines, setLines] =
     useState<[ScannedTraitLine, ScannedTraitLine, ScannedTraitLine]>(
@@ -131,7 +134,9 @@ export default function ScanPage() {
     "atLeast2",
   );
   const [captureProfile, setCaptureProfile] = useState<string | null>(null);
-  const [status, setStatus] = useState("데이터를 불러오는 중...");
+  const [status, setStatus] = useState(
+    "게임 화면을 공유하면 자동 인식을 시작합니다.",
+  );
 
   const autoOcrBusyRef = useRef(false);
   const autoOcrQueuedRef = useRef<CapturePayload | null>(null);
@@ -152,29 +157,10 @@ export default function ScanPage() {
 
   useEffect(() => {
     isPageActiveRef.current = true;
-    const run = async () => {
-      try {
-        const manifest = await loadManifest();
-        const staticData = await loadStaticData(manifest.dataVersion);
-        if (!isPageActiveRef.current) return;
-        setData({
-          options: staticData.options,
-          weapons: staticData.weapons,
-          dataVersion: manifest.dataVersion,
-        });
-        setStatus("게임 화면을 공유하면 자동 인식을 시작합니다.");
-        void warmupOcrEngine().catch((error) => {
-          if (!isPageActiveRef.current) return;
-          console.error(error);
-        });
-      } catch (error) {
-        if (!isPageActiveRef.current) return;
-        console.error(error);
-        setLoadingError("정적 데이터 JSON 로드에 실패했습니다.");
-      }
-    };
-
-    void run();
+    void warmupOcrEngine().catch((error) => {
+      if (!isPageActiveRef.current) return;
+      console.error(error);
+    });
     return () => {
       isPageActiveRef.current = false;
       autoOcrBusyRef.current = false;
@@ -188,12 +174,12 @@ export default function ScanPage() {
   }, []);
 
   const weaponsById = useMemo(
-    () => new Map((data?.weapons ?? []).map((weapon) => [weapon.id, weapon])),
-    [data?.weapons],
+    () => new Map(data.weapons.map((weapon) => [weapon.id, weapon])),
+    [data.weapons],
   );
   const optionsById = useMemo(
-    () => new Map((data?.options ?? []).map((option) => [option.id, option])),
-    [data?.options],
+    () => new Map(data.options.map((option) => [option.id, option])),
+    [data.options],
   );
   const visibleMatches = useMemo(() => {
     if (matchView === "atLeast3") {
@@ -229,10 +215,6 @@ export default function ScanPage() {
       expectedSignature?: string,
     ) => {
       if (!isPageActiveRef.current) return false;
-      if (!data) {
-        setStatus("데이터가 아직 로드되지 않았습니다.");
-        return false;
-      }
 
       latestLineCanvasesRef.current = targetLineCanvases;
       const targetSet = targetIndexes ? new Set(targetIndexes) : null;
@@ -386,7 +368,7 @@ export default function ScanPage() {
   }, [runOcrOnLineCanvases]);
 
   const retryFailedLines = useCallback(async () => {
-    if (!latestLineCanvasesRef.current || !data) return;
+    if (!latestLineCanvasesRef.current) return;
     const failed = lineNeedsRetry
       .map((value, index) => (value ? index : -1))
       .filter((index) => index >= 0);
@@ -402,7 +384,7 @@ export default function ScanPage() {
     } finally {
       setIsOcrRunning(false);
     }
-  }, [data, lineNeedsRetry, runOcrOnLineCanvases]);
+  }, [lineNeedsRetry, runOcrOnLineCanvases]);
 
   const saveScan = async () => {
     const record: ScannedTrait = {
@@ -431,14 +413,6 @@ export default function ScanPage() {
     setStatus("스캔 기록을 저장했습니다.");
   };
 
-  if (loadingError) {
-    return (
-      <main className="mx-auto max-w-5xl p-6 text-sm text-red-600">
-        {loadingError}
-      </main>
-    );
-  }
-
   return (
     <main className="mx-auto min-h-screen max-w-7xl space-y-4 p-4 pb-10 md:p-6">
       <section className="hud-panel p-5">
@@ -458,14 +432,9 @@ export default function ScanPage() {
             >
               OCR Active
             </Badge>
-            {data && (
-              <Badge
-                variant="outline"
-                className="border-primary/40 text-primary"
-              >
-                Data v{data.dataVersion}
-              </Badge>
-            )}
+            <Badge variant="outline" className="border-primary/40 text-primary">
+              Data v{data.dataVersion}
+            </Badge>
           </div>
         </div>
       </section>
@@ -556,14 +525,14 @@ export default function ScanPage() {
                 <Button
                   variant="outline"
                   onClick={() => void retryFailedLines()}
-                  disabled={!data || isOcrRunning || !hasFailedLines}
+                  disabled={isOcrRunning || !hasFailedLines}
                 >
                   실패 줄 재인식
                 </Button>
                 <Button
                   variant="secondary"
                   onClick={saveScan}
-                  disabled={!data || hasFailedLines}
+                  disabled={hasFailedLines}
                 >
                   스캔 저장
                 </Button>

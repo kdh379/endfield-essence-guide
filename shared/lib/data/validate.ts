@@ -1,8 +1,7 @@
-﻿import type {
+import type {
   DataManifest,
   Option,
   ThreatZone,
-  ThreatZoneOptionPool,
   Weapon,
 } from "@/shared/lib/data/schemas";
 
@@ -47,15 +46,22 @@ export function validateWeapons(weapons: Weapon[]) {
   }
 }
 
-export function validateThreatZones(
-  zones: ThreatZone[],
-  pools: ThreatZoneOptionPool[],
-  options: Option[],
-) {
-  const zoneIds = new Set(zones.map((zone) => zone.id));
+export function validateThreatZones(zones: ThreatZone[], options: Option[]) {
   const optionIds = new Set(options.map((option) => option.id));
-  for (const pool of pools) {
-    assert(zoneIds.has(pool.zoneId), `unknown zoneId: ${pool.zoneId}`);
-    assert(optionIds.has(pool.optionId), `unknown optionId: ${pool.optionId}`);
+
+  for (const zone of zones) {
+    assert(zone.id.length > 0, "zone.id missing");
+    assert(zone.nameKo.length > 0, `zone.nameKo missing: ${zone.id}`);
+    assert(Boolean(zone.essencePool), `zone.essencePool missing: ${zone.id}`);
+
+    for (const optionId of zone.essencePool.base) {
+      assert(optionIds.has(optionId), `unknown base optionId: ${optionId}`);
+    }
+    for (const optionId of zone.essencePool.sub) {
+      assert(optionIds.has(optionId), `unknown sub optionId: ${optionId}`);
+    }
+    for (const optionId of zone.essencePool.skill) {
+      assert(optionIds.has(optionId), `unknown skill optionId: ${optionId}`);
+    }
   }
 }
