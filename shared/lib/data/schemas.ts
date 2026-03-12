@@ -12,7 +12,6 @@ export interface Weapon {
   id: string;
   nameKo: string;
   rarity: number;
-  iconKey: string;
   iconUrl?: string;
   weaponOptionSlots: {
     base: number;
@@ -22,7 +21,6 @@ export interface Weapon {
   weaponBuildMeta?: {
     validTripleOptionSets: string[][];
     notes?: string;
-    sourceRefs?: string[];
   };
 }
 
@@ -97,14 +95,4 @@ export interface DataManifest {
 export interface VersionedItems<T> {
   dataVersion: DataVersion;
   items: T[];
-}
-
-export interface EnrichmentWeaponTriples {
-  dataVersion: DataVersion;
-  items: Array<{
-    weaponId: string;
-    optionTriples: string[][];
-    sourceRefs?: string[];
-    sourceConfidence: number;
-  }>;
 }

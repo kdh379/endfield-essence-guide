@@ -1,6 +1,5 @@
-﻿import type {
+import type {
   DataManifest,
-  EnrichmentWeaponTriples,
   Option,
   ThreatZone,
   ThreatZoneOptionPool,
@@ -15,7 +14,6 @@ import {
 } from "@/shared/lib/data/validate";
 
 const STATIC_PREFIX = "/data/static";
-const ENRICH_PREFIX = "/data/enrichment";
 
 async function fetchJson<T>(url: string): Promise<T> {
   const res = await fetch(url, { cache: "no-store" });
@@ -58,14 +56,5 @@ export async function loadStaticData(version: string) {
     weapons: weapons.items,
     threatZones: threatZones.items,
     threatZonePool: threatZonePool.items,
-  };
-}
-
-export async function loadEnrichmentData(version: string) {
-  const triples = await fetchJson<EnrichmentWeaponTriples>(
-    `${ENRICH_PREFIX}/v${version}/weapon-valid-triples.json`,
-  );
-  return {
-    weaponTriples: triples.items,
   };
 }

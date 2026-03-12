@@ -1,25 +1,19 @@
-﻿import type { Option, Weapon, WeaponMatch } from "@/shared/lib/data/schemas";
-
-interface WeaponTripleEntry {
-  weaponId: string;
-  optionTriples: string[][];
-}
+import type { Option, Weapon, WeaponMatch } from "@/shared/lib/data/schemas";
 
 export function matchWeaponsByTrait(
   lineOptionIds: string[],
   weapons: Weapon[],
-  triples: WeaponTripleEntry[],
 ): WeaponMatch[] {
-  const byWeapon = new Map(triples.map((entry) => [entry.weaponId, entry]));
   const matches: WeaponMatch[] = [];
 
   for (const weapon of weapons) {
-    const entry = byWeapon.get(weapon.id);
-    if (!entry) continue;
-    const sortedInput = [...lineOptionIds].sort();
+    const triples = weapon.weaponBuildMeta?.validTripleOptionSets ?? [];
+    if (triples.length === 0) continue;
 
+    const sortedInput = [...lineOptionIds].sort();
     let best: WeaponMatch | null = null;
-    for (const triple of entry.optionTriples) {
+
+    for (const triple of triples) {
       const sortedTriple = [...triple].sort();
       const intersection = sortedInput.filter((x) => sortedTriple.includes(x));
       if (intersection.length === 3) {

@@ -20,11 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui/table";
-import {
-  loadEnrichmentData,
-  loadManifest,
-  loadStaticData,
-} from "@/shared/lib/data/loader";
+import { loadManifest, loadStaticData } from "@/shared/lib/data/loader";
 import type {
   Option,
   ThreatZone,
@@ -39,7 +35,6 @@ interface LoadedData {
   weapons: Weapon[];
   threatZones: ThreatZone[];
   threatZonePool: ThreatZoneOptionPool[];
-  triples: Array<{ weaponId: string; optionTriples: string[][] }>;
   dataVersion: string;
 }
 
@@ -62,13 +57,11 @@ export default function FarmPage() {
       try {
         const manifest = await loadManifest();
         const staticData = await loadStaticData(manifest.dataVersion);
-        const enrichment = await loadEnrichmentData(manifest.dataVersion);
         setData({
           options: staticData.options,
           weapons: staticData.weapons,
           threatZones: staticData.threatZones,
           threatZonePool: staticData.threatZonePool,
-          triples: enrichment.weaponTriples,
           dataVersion: manifest.dataVersion,
         });
       } catch (loadError) {
@@ -100,12 +93,12 @@ export default function FarmPage() {
   const tripleByWeapon = useMemo(
     () =>
       new Map(
-        (data?.triples ?? []).map((triple) => [
-          triple.weaponId,
-          triple.optionTriples,
+        (data?.weapons ?? []).map((weapon) => [
+          weapon.id,
+          weapon.weaponBuildMeta?.validTripleOptionSets ?? [],
         ]),
       ),
-    [data?.triples],
+    [data?.weapons],
   );
 
   const recommendedZonesForSelectedWeapon = useMemo(() => {

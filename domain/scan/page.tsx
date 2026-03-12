@@ -9,11 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Progress } from "@/shared/ui/progress";
 import { Separator } from "@/shared/ui/separator";
 import { Skeleton } from "@/shared/ui/skeleton";
-import {
-  loadEnrichmentData,
-  loadManifest,
-  loadStaticData,
-} from "@/shared/lib/data/loader";
+import { loadManifest, loadStaticData } from "@/shared/lib/data/loader";
 import { db } from "@/shared/lib/db/dexie";
 import type {
   Option,
@@ -36,7 +32,6 @@ const AUTO_OCR_MIN_INTERVAL_MS = 120;
 interface LoadedData {
   options: Option[];
   weapons: Weapon[];
-  triples: Array<{ weaponId: string; optionTriples: string[][] }>;
   dataVersion: string;
 }
 
@@ -161,12 +156,10 @@ export default function ScanPage() {
       try {
         const manifest = await loadManifest();
         const staticData = await loadStaticData(manifest.dataVersion);
-        const enrichment = await loadEnrichmentData(manifest.dataVersion);
         if (!isPageActiveRef.current) return;
         setData({
           options: staticData.options,
           weapons: staticData.weapons,
-          triples: enrichment.weaponTriples,
           dataVersion: manifest.dataVersion,
         });
         setStatus("게임 화면을 공유하면 자동 인식을 시작합니다.");
@@ -306,11 +299,7 @@ export default function ScanPage() {
       const optionIds = typedLines
         .map((line) => line.optionId)
         .filter(Boolean) as string[];
-      const matched = matchWeaponsByTrait(
-        optionIds,
-        data.weapons,
-        data.triples,
-      );
+      const matched = matchWeaponsByTrait(optionIds, data.weapons);
       setMatches(matched);
       setIsMatchLoading(false);
       if (!targetIndexes) {
