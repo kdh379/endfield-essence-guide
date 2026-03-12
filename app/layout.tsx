@@ -1,7 +1,14 @@
-﻿import type { Metadata } from "next";
-import { Noto_Sans_KR, Orbitron, Geist_Mono } from "next/font/google";
+import type { Metadata } from "next";
+import { Geist_Mono, Noto_Sans_KR, Orbitron } from "next/font/google";
 
 import { GlobalNav } from "@/shared/layout/global-nav";
+import {
+  defaultDescription,
+  defaultKeywords,
+  defaultTitle,
+  siteName,
+  siteUrl,
+} from "@/shared/lib/site";
 import "./globals.css";
 
 const notoSansKr = Noto_Sans_KR({
@@ -22,9 +29,41 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Endfield Essence Guide",
-  description:
-    "Screen-share based essence scanning and farming recommendations",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: defaultTitle,
+    template: "%s | 엔드필드 기질작 가이드",
+  },
+  description: defaultDescription,
+  applicationName: siteName,
+  keywords: defaultKeywords,
+  alternates: {
+    canonical: "/scan",
+  },
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    url: siteUrl,
+    siteName,
+    title: defaultTitle,
+    description: defaultDescription,
+  },
+  twitter: {
+    card: "summary",
+    title: defaultTitle,
+    description: defaultDescription,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
 };
 
 export default function RootLayout({
