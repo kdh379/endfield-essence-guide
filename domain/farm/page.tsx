@@ -95,7 +95,7 @@ export default function FarmPage() {
       new Map(
         (data?.weapons ?? []).map((weapon) => [
           weapon.id,
-          weapon.weaponBuildMeta?.validTripleOptionSets ?? [],
+          [[weapon.essence.base, weapon.essence.sub, weapon.essence.skill]],
         ]),
       ),
     [data?.weapons],

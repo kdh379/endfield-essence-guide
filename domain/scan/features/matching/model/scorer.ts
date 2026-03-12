@@ -7,22 +7,20 @@ export function matchWeaponsByTrait(
   const matches: WeaponMatch[] = [];
 
   for (const weapon of weapons) {
-    const triples = weapon.weaponBuildMeta?.validTripleOptionSets ?? [];
-    if (triples.length === 0) continue;
-
     const sortedInput = [...lineOptionIds].sort();
+    const essence = [
+      weapon.essence.base,
+      weapon.essence.sub,
+      weapon.essence.skill,
+    ];
     let best: WeaponMatch | null = null;
 
-    for (const triple of triples) {
-      const sortedTriple = [...triple].sort();
-      const intersection = sortedInput.filter((x) => sortedTriple.includes(x));
-      if (intersection.length === 3) {
-        best = { weaponId: weapon.id, matchType: "exact3", score: 1 };
-        break;
-      }
-      if (intersection.length === 2 && (!best || best.score < 0.72)) {
-        best = { weaponId: weapon.id, matchType: "partial2", score: 0.72 };
-      }
+    const sortedEssence = [...essence].sort();
+    const intersection = sortedInput.filter((x) => sortedEssence.includes(x));
+    if (intersection.length === 3) {
+      best = { weaponId: weapon.id, matchType: "exact3", score: 1 };
+    } else if (intersection.length === 2) {
+      best = { weaponId: weapon.id, matchType: "partial2", score: 0.72 };
     }
 
     if (best) matches.push(best);

@@ -13,14 +13,10 @@ export interface Weapon {
   nameKo: string;
   rarity: number;
   iconUrl?: string;
-  weaponOptionSlots: {
-    base: number;
-    sub: number;
-    skill: number;
-  };
-  weaponBuildMeta?: {
-    validTripleOptionSets: string[][];
-    notes?: string;
+  essence: {
+    base: string;
+    sub: string;
+    skill: string;
   };
 }
 

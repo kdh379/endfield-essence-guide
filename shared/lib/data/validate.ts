@@ -31,6 +31,19 @@ export function validateWeapons(weapons: Weapon[]) {
   for (const weapon of weapons) {
     assert(weapon.id.length > 0, "weapon.id missing");
     assert(weapon.nameKo.length > 0, `weapon.nameKo missing: ${weapon.id}`);
+    assert(Boolean(weapon.essence), `weapon.essence missing: ${weapon.id}`);
+    assert(
+      Boolean(weapon.essence.base),
+      `weapon.essence.base missing: ${weapon.id}`,
+    );
+    assert(
+      Boolean(weapon.essence.sub),
+      `weapon.essence.sub missing: ${weapon.id}`,
+    );
+    assert(
+      Boolean(weapon.essence.skill),
+      `weapon.essence.skill missing: ${weapon.id}`,
+    );
   }
 }
 
@@ -46,4 +59,3 @@ export function validateThreatZones(
     assert(optionIds.has(pool.optionId), `unknown optionId: ${pool.optionId}`);
   }
 }
-
