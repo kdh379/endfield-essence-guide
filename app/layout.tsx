@@ -10,6 +10,7 @@ import {
   siteUrl,
 } from "@/shared/lib/site";
 import "./globals.css";
+import { getManifest } from "@/shared/lib/data/server";
 
 const notoSansKr = Noto_Sans_KR({
   variable: "--font-sans",
@@ -38,7 +39,7 @@ export const metadata: Metadata = {
   applicationName: siteName,
   keywords: defaultKeywords,
   alternates: {
-    canonical: "/scan",
+    canonical: "/match",
   },
   openGraph: {
     type: "website",
@@ -66,18 +67,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const manifest = await getManifest();
   return (
     <html
       lang="ko"
       className={`dark ${notoSansKr.variable} ${orbitron.variable} ${geistMono.variable}`}
     >
       <body className="font-sans antialiased">
-        <GlobalNav />
+        <GlobalNav
+          dataVersion={manifest.dataVersion}
+          updatedAt={manifest.updatedAt}
+        />
         {children}
       </body>
     </html>

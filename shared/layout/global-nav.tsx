@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { RiMenu4Line, RiPulseLine } from "@remixicon/react";
+import dayjs from "dayjs";
 
 import { Button } from "@/shared/ui/button";
 import {
@@ -12,11 +13,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/shared/ui/sheet";
+import { Badge } from "@/shared/ui/badge";
+import { getManifest } from "@/shared/lib/data/server";
 
 const NAV_ITEMS = [
-  { href: "/scan", label: "스캐너" },
-  { href: "/farm", label: "구역 추천" },
-  { href: "/history", label: "히스토리" },
+  { href: "/match", label: "기질 매칭" },
+  { href: "/farming", label: "파밍 추천" },
 ];
 
 function NavLinks({
@@ -50,13 +52,19 @@ function NavLinks({
   );
 }
 
-export function GlobalNav() {
+export function GlobalNav({
+  dataVersion,
+  updatedAt,
+}: {
+  dataVersion: string;
+  updatedAt: string;
+}) {
   const pathname = usePathname();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/80 backdrop-blur-xl">
       <nav className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 md:px-6">
-        <Link href="/scan" className="flex items-center gap-2">
+        <Link href="/match" className="flex items-center gap-2">
           <span className="rounded-md border border-primary/50 bg-primary/15 p-1.5 text-primary">
             <RiPulseLine size={16} />
           </span>
@@ -70,7 +78,13 @@ export function GlobalNav() {
 
         <NavLinks pathname={pathname} />
 
-        <div className="flex items-center gap-2">
+        <div>
+          <div className="hidden items-center gap-2 md:flex">
+            <Badge variant="secondary">데이터: v{dataVersion}</Badge>
+            <Badge variant="secondary">
+              업데이트: {dayjs(updatedAt).format("YYYY-MM-DD")}
+            </Badge>
+          </div>
           <Sheet>
             <SheetTrigger asChild>
               <Button size="icon" variant="outline" className="md:hidden">

@@ -47,16 +47,6 @@ export interface WeaponMatch {
   score: number;
 }
 
-export interface ScannedTrait {
-  id: string;
-  capturedAt: string;
-  imageHash: string;
-  lines: [ScannedTraitLine, ScannedTraitLine, ScannedTraitLine];
-  lock: boolean;
-  lockReason?: "triple_valid" | "partial_match" | "manual";
-  matchedWeapons: WeaponMatch[];
-}
-
 export interface WeaponOptionLevel {
   weaponId: string;
   optionId: string;
