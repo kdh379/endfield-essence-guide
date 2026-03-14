@@ -1,5 +1,5 @@
 {
-  "dataVersion": "1.0",
+  "dataVersion": "1.1",
   "items": [
     {
       "id": "wpn_6_001",
@@ -285,6 +285,39 @@
         "base": "opt_base_003",
         "sub": "opt_sub_001",
         "skill": "opt_skill_009"
+      }
+    },
+    {
+      "id": "wpn_6_027",
+      "nameKo": "반항",
+      "rarity": 6,
+      "iconUrl": "/images/weapons/wpn_6_027.png",
+      "essence": {
+        "base": "opt_base_001",
+        "sub": "opt_sub_001",
+        "skill": "opt_skill_005"
+      }
+    },
+    {
+      "id": "wpn_6_028",
+      "nameKo": "향수",
+      "rarity": 6,
+      "iconUrl": "/images/weapons/wpn_6_028.png",
+      "essence": {
+        "base": "opt_base_001",
+        "sub": "opt_sub_003",
+        "skill": "opt_skill_009"
+      }
+    },
+    {
+      "id": "wpn_6_029",
+      "nameKo": "찬란했던 기억",
+      "rarity": 6,
+      "iconUrl": "/images/weapons/wpn_6_029.png",
+      "essence": {
+        "base": "opt_base_001",
+        "sub": "opt_sub_011",
+        "skill": "opt_skill_008"
       }
     },
     {

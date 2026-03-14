@@ -17,6 +17,7 @@ import {
   validateManifest,
   validateOptions,
   validateThreatZones,
+  validateVersionedItems,
   validateWeapons,
 } from "@/shared/lib/data/validate";
 
@@ -40,22 +41,19 @@ async function readManifestFile(): Promise<DataManifest> {
 
 async function readStaticGameDataFile(): Promise<StaticGameData> {
   const manifest = await readManifestFile();
-  const versionDir = path.join(
-    process.cwd(),
-    "public",
-    "data",
-    "static",
-    `v${manifest.dataVersion}`,
-  );
+  const staticDir = path.join(process.cwd(), "public", "data", "static");
 
   const [options, weapons, threatZones] = await Promise.all([
-    readJsonFile<VersionedItems<Option>>(path.join(versionDir, "options.json")),
-    readJsonFile<VersionedItems<Weapon>>(path.join(versionDir, "weapons.json")),
+    readJsonFile<VersionedItems<Option>>(path.join(staticDir, "options.json")),
+    readJsonFile<VersionedItems<Weapon>>(path.join(staticDir, "weapons.json")),
     readJsonFile<VersionedItems<ThreatZone>>(
-      path.join(versionDir, "threat-zones.json"),
+      path.join(staticDir, "threat-zones.json"),
     ),
   ]);
 
+  validateVersionedItems("options", options, manifest.dataVersion);
+  validateVersionedItems("weapons", weapons, manifest.dataVersion);
+  validateVersionedItems("threatZones", threatZones, manifest.dataVersion);
   validateOptions(options.items);
   validateWeapons(weapons.items);
   validateThreatZones(threatZones.items, options.items);

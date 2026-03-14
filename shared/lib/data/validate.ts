@@ -2,6 +2,7 @@ import type {
   DataManifest,
   Option,
   ThreatZone,
+  VersionedItems,
   Weapon,
 } from "@/shared/lib/data/schemas";
 
@@ -13,6 +14,19 @@ export function validateManifest(manifest: DataManifest) {
   assert(Boolean(manifest.dataVersion), "manifest.dataVersion missing");
   assert(Boolean(manifest.minAppVersion), "manifest.minAppVersion missing");
   assert(Boolean(manifest.updatedAt), "manifest.updatedAt missing");
+}
+
+export function validateVersionedItems<T>(
+  label: string,
+  payload: VersionedItems<T>,
+  expectedVersion: string,
+) {
+  assert(Boolean(payload.dataVersion), `${label}.dataVersion missing`);
+  assert(
+    payload.dataVersion === expectedVersion,
+    `${label}.dataVersion mismatch: expected ${expectedVersion}, received ${payload.dataVersion}`,
+  );
+  assert(Array.isArray(payload.items), `${label}.items missing`);
 }
 
 export function validateOptions(options: Option[]) {
