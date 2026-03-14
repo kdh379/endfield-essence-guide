@@ -23,6 +23,12 @@ export function WeaponTabContent({
   recommendedFarmingPlans,
   onSelectWeapon,
 }: WeaponTabContentProps) {
+  const visibleFarmingPlans = selectedWeapon
+    ? recommendedFarmingPlans.filter((plan) =>
+        plan.weapons.some((weapon) => weapon.id === selectedWeapon.id),
+      )
+    : [];
+
   return (
     <section className="grid gap-4 xl:grid-cols-[1.18fr_0.82fr]">
       <Card className="overflow-hidden rounded-[24px] border-white/10 bg-[#0b1017]/92">
@@ -72,7 +78,7 @@ export function WeaponTabContent({
         )}
 
         <div className="grid gap-3">
-          {recommendedFarmingPlans.map((plan, index) => (
+          {visibleFarmingPlans.map((plan, index) => (
             <Card
               key={`${plan.zone.id}-${plan.focusType}`}
               className={`overflow-hidden py-4 rounded-2xl border border-white/10 bg-linear-to-br ${zoneAccent(index)}`}

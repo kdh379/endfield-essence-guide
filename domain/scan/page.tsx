@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { ScreenCapturePanel } from "@/domain/scan/widgets/screen-capture-panel";
 import { Badge } from "@/shared/ui/badge";
@@ -173,143 +173,127 @@ export default function ScanPage({ initialData }: ScanPageProps) {
     };
   }, []);
 
-  const weaponsById = useMemo(
-    () => new Map(data.weapons.map((weapon) => [weapon.id, weapon])),
-    [data.weapons],
+  const weaponsById = new Map(
+    data.weapons.map((weapon) => [weapon.id, weapon]),
   );
-  const optionsById = useMemo(
-    () => new Map(data.options.map((option) => [option.id, option])),
-    [data.options],
+  const optionsById = new Map(
+    data.options.map((option) => [option.id, option]),
   );
-  const visibleMatches = useMemo(() => {
-    if (matchView === "atLeast3") {
-      return matches.filter((match) => match.matchType === "exact3");
-    }
-    return matches.filter(
-      (match) => match.matchType === "exact3" || match.matchType === "partial2",
-    );
-  }, [matchView, matches]);
-  const hasFailedLines = useMemo(
-    () => lineNeedsRetry.some(Boolean),
-    [lineNeedsRetry],
-  );
-  const lineProgress = useMemo(() => {
-    const recognized = lines.filter((line) => Boolean(line.optionId)).length;
-    return Math.round((recognized / 3) * 100);
-  }, [lines]);
-  const emptyMatchMessage = useMemo(() => {
-    if (matches.length === 0) {
-      return "OCR 매핑 이후 유효 무기 목록이 표시됩니다.";
-    }
-    return "현재 필터에서 표시할 무기가 없습니다.";
-  }, [matches.length]);
-
-  const runOcrOnLineCanvases = useCallback(
-    async (
-      targetLineCanvases: [
-        HTMLCanvasElement,
-        HTMLCanvasElement,
-        HTMLCanvasElement,
-      ],
-      targetIndexes?: number[],
-      expectedSignature?: string,
-    ) => {
-      if (!isPageActiveRef.current) return false;
-
-      latestLineCanvasesRef.current = targetLineCanvases;
-      const targetSet = targetIndexes ? new Set(targetIndexes) : null;
-      const nextLines = [
-        ...lastCommittedLinesRef.current,
-      ] as ScannedTraitLine[];
-      const nextRetry = [...lineNeedsRetry] as [boolean, boolean, boolean];
-      let totalLatencyMs = 0;
-
-      for (let i = 0; i < targetLineCanvases.length; i += 1) {
-        if (targetSet && !targetSet.has(i)) continue;
-
-        const best = await recognizeBestLine(
-          targetLineCanvases[i],
-          data.options,
-          {
-            aggressive: Boolean(targetIndexes),
-            fastPathOnly: !targetIndexes && autoFastPathOnlyRef.current,
-          },
+  const visibleMatches =
+    matchView === "atLeast3"
+      ? matches.filter((match) => match.matchType === "exact3")
+      : matches.filter(
+          (match) =>
+            match.matchType === "exact3" || match.matchType === "partial2",
         );
-        totalLatencyMs += best.latencyMs;
-        if (!isPageActiveRef.current) return false;
-        const hasText =
-          (best.normalizedText || best.rawText).trim().length >= 2;
-        const reliable = hasText && isReliableMatch(best);
+  const hasFailedLines = lineNeedsRetry.some(Boolean);
+  const lineProgress = Math.round(
+    (lines.filter((line) => Boolean(line.optionId)).length / 3) * 100,
+  );
+  const emptyMatchMessage =
+    matches.length === 0
+      ? "OCR 매핑 이후 유효 무기 목록이 표시됩니다."
+      : "현재 필터에서 표시할 무기가 없습니다.";
+  const drainAutoOcrQueueRef = useRef<() => Promise<void>>(async () => {});
 
-        if (!hasText) {
-          nextLines[i] = {
-            lineNo: (i + 1) as 1 | 2 | 3,
-            rawText: "",
-            normalizedText: "",
-            confidence: 0,
-          };
-          nextRetry[i] = true;
-          continue;
-        }
+  const runOcrOnLineCanvases = async (
+    targetLineCanvases: [
+      HTMLCanvasElement,
+      HTMLCanvasElement,
+      HTMLCanvasElement,
+    ],
+    targetIndexes?: number[],
+    expectedSignature?: string,
+  ) => {
+    if (!isPageActiveRef.current) return false;
 
+    latestLineCanvasesRef.current = targetLineCanvases;
+    const targetSet = targetIndexes ? new Set(targetIndexes) : null;
+    const nextLines = [...lastCommittedLinesRef.current] as ScannedTraitLine[];
+    const nextRetry = [...lineNeedsRetry] as [boolean, boolean, boolean];
+    let totalLatencyMs = 0;
+
+    for (let i = 0; i < targetLineCanvases.length; i += 1) {
+      if (targetSet && !targetSet.has(i)) continue;
+
+      const best = await recognizeBestLine(
+        targetLineCanvases[i],
+        data.options,
+        {
+          aggressive: Boolean(targetIndexes),
+          fastPathOnly: !targetIndexes && autoFastPathOnlyRef.current,
+        },
+      );
+      totalLatencyMs += best.latencyMs;
+      if (!isPageActiveRef.current) return false;
+      const hasText = (best.normalizedText || best.rawText).trim().length >= 2;
+      const reliable = hasText && isReliableMatch(best);
+
+      if (!hasText) {
         nextLines[i] = {
           lineNo: (i + 1) as 1 | 2 | 3,
-          rawText: best.rawText,
-          normalizedText: best.normalizedText,
-          optionId: reliable ? best.optionId : undefined,
-          confidence: best.confidence,
+          rawText: "",
+          normalizedText: "",
+          confidence: 0,
         };
-        nextRetry[i] = !reliable;
+        nextRetry[i] = true;
+        continue;
       }
 
-      const typedLines = nextLines as [
-        ScannedTraitLine,
-        ScannedTraitLine,
-        ScannedTraitLine,
-      ];
-      if (
-        expectedSignature &&
-        expectedSignature !== latestCaptureSignatureRef.current
-      ) {
-        return false;
-      }
-      if (!isPageActiveRef.current) return false;
-      lastCommittedLinesRef.current = typedLines;
-      setLines(typedLines);
-      setLineNeedsRetry(nextRetry);
+      nextLines[i] = {
+        lineNo: (i + 1) as 1 | 2 | 3,
+        rawText: best.rawText,
+        normalizedText: best.normalizedText,
+        optionId: reliable ? best.optionId : undefined,
+        confidence: best.confidence,
+      };
+      nextRetry[i] = !reliable;
+    }
 
-      const optionIds = typedLines
-        .map((line) => line.optionId)
-        .filter(Boolean) as string[];
-      const matched = matchWeaponsByTrait(optionIds, data.weapons);
-      setMatches(matched);
-      setIsMatchLoading(false);
-      if (!targetIndexes) {
-        const history = autoOcrLatencyHistoryRef.current;
-        history.push(totalLatencyMs);
-        if (history.length > 30) history.shift();
+    const typedLines = nextLines as [
+      ScannedTraitLine,
+      ScannedTraitLine,
+      ScannedTraitLine,
+    ];
+    if (
+      expectedSignature &&
+      expectedSignature !== latestCaptureSignatureRef.current
+    ) {
+      return false;
+    }
+    if (!isPageActiveRef.current) return false;
+    lastCommittedLinesRef.current = typedLines;
+    setLines(typedLines);
+    setLineNeedsRetry(nextRetry);
 
-        const sorted = [...history].sort((a, b) => a - b);
-        const p95Index = Math.max(0, Math.ceil(sorted.length * 0.95) - 1);
-        const p95 = sorted[p95Index] ?? totalLatencyMs;
-        autoFastPathOnlyRef.current =
-          history.length >= 5 && p95 > AUTO_OCR_TARGET_MS;
-      }
-      if (nextRetry.some(Boolean)) {
-        setStatus(
-          `일부 줄 인식 실패: 실패 줄만 재인식해 주세요. (${Math.round(totalLatencyMs)}ms)`,
-        );
-      } else {
-        setStatus(
-          `자동 OCR이 완료되었습니다. (${Math.round(totalLatencyMs)}ms)`,
-        );
-      }
-      return true;
-    },
-    [data, lineNeedsRetry],
-  );
+    const optionIds = typedLines
+      .map((line) => line.optionId)
+      .filter(Boolean) as string[];
+    const matched = matchWeaponsByTrait(optionIds, data.weapons);
+    setMatches(matched);
+    setIsMatchLoading(false);
+    if (!targetIndexes) {
+      const history = autoOcrLatencyHistoryRef.current;
+      history.push(totalLatencyMs);
+      if (history.length > 30) history.shift();
 
-  const drainAutoOcrQueue = useCallback(async () => {
+      const sorted = [...history].sort((a, b) => a - b);
+      const p95Index = Math.max(0, Math.ceil(sorted.length * 0.95) - 1);
+      const p95 = sorted[p95Index] ?? totalLatencyMs;
+      autoFastPathOnlyRef.current =
+        history.length >= 5 && p95 > AUTO_OCR_TARGET_MS;
+    }
+    if (nextRetry.some(Boolean)) {
+      setStatus(
+        `일부 줄 인식 실패: 실패 줄만 재인식해 주세요. (${Math.round(totalLatencyMs)}ms)`,
+      );
+    } else {
+      setStatus(`자동 OCR이 완료되었습니다. (${Math.round(totalLatencyMs)}ms)`);
+    }
+    return true;
+  };
+
+  const drainAutoOcrQueue = async () => {
     if (!isPageActiveRef.current) return;
     if (autoOcrBusyRef.current) return;
 
@@ -322,7 +306,7 @@ export default function ScanPage({ initialData }: ScanPageProps) {
       const wait = AUTO_OCR_MIN_INTERVAL_MS - elapsed;
       autoOcrTimeoutRef.current = window.setTimeout(() => {
         autoOcrTimeoutRef.current = null;
-        void drainAutoOcrQueue();
+        void drainAutoOcrQueueRef.current();
       }, wait);
       return;
     }
@@ -361,13 +345,15 @@ export default function ScanPage({ initialData }: ScanPageProps) {
       if (autoOcrQueuedRef.current) {
         autoOcrTimeoutRef.current = window.setTimeout(() => {
           autoOcrTimeoutRef.current = null;
-          void drainAutoOcrQueue();
+          void drainAutoOcrQueueRef.current();
         }, 20);
       }
     }
-  }, [runOcrOnLineCanvases]);
+  };
 
-  const retryFailedLines = useCallback(async () => {
+  drainAutoOcrQueueRef.current = drainAutoOcrQueue;
+
+  const retryFailedLines = async () => {
     if (!latestLineCanvasesRef.current) return;
     const failed = lineNeedsRetry
       .map((value, index) => (value ? index : -1))
@@ -384,7 +370,7 @@ export default function ScanPage({ initialData }: ScanPageProps) {
     } finally {
       setIsOcrRunning(false);
     }
-  }, [lineNeedsRetry, runOcrOnLineCanvases]);
+  };
 
   const saveScan = async () => {
     const record: ScannedTrait = {

@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -38,8 +38,6 @@ interface CaptureSessionState {
   pendingDetectedAt: number;
   lastCaptureAt: number;
   isAutoCaptureBusy: boolean;
-  drawOverlay: () => void;
-  captureScanFrame: () => boolean;
 }
 
 const AUTO_CAPTURE_INTERVAL_MS = 50;
@@ -165,16 +163,16 @@ export function ScreenCapturePanel({
     pendingDetectedAt: 0,
     lastCaptureAt: 0,
     isAutoCaptureBusy: false,
-    drawOverlay: () => undefined,
-    captureScanFrame: () => false,
   });
+  const drawOverlayRef = useRef<() => void>(() => undefined);
+  const captureScanFrameRef = useRef<() => boolean>(() => false);
 
   const [ui, setUi] = useState<PanelUiState>({
     isSharing: false,
     status: "화면 공유를 시작해 주세요.",
   });
 
-  const attachStreamToVideo = useCallback(async (stream: MediaStream) => {
+  const attachStreamToVideo = async (stream: MediaStream) => {
     captureSessionRef.current.stream = stream;
     const video = videoRef.current;
     if (video) {
@@ -182,13 +180,13 @@ export function ScreenCapturePanel({
       await video.play();
     }
     setUi({ isSharing: true, status: "화면 공유 중입니다." });
-  }, []);
+  };
 
-  const setStatus = useCallback((status: string) => {
+  const setStatus = (status: string) => {
     setUi((prev) => ({ ...prev, status }));
-  }, []);
+  };
 
-  const clearLoopTimers = useCallback(() => {
+  const clearLoopTimers = () => {
     const session = captureSessionRef.current;
 
     if (session.rafId) {
@@ -200,9 +198,9 @@ export function ScreenCapturePanel({
       session.intervalId = null;
     }
     session.isAutoCaptureBusy = false;
-  }, []);
+  };
 
-  const releaseSharingSession = useCallback(() => {
+  const releaseSharingSession = () => {
     const session = captureSessionRef.current;
     session.stream?.getTracks().forEach((track) => track.stop());
     session.stream = null;
@@ -211,14 +209,14 @@ export function ScreenCapturePanel({
     if (video) {
       video.srcObject = null;
     }
-  }, [clearLoopTimers]);
+  };
 
-  const stopSharing = useCallback(() => {
+  const stopSharing = () => {
     releaseSharingSession();
     setUi({ isSharing: false, status: "화면 공유를 종료했습니다." });
-  }, [releaseSharingSession]);
+  };
 
-  const drawOverlay = useCallback(() => {
+  const drawOverlay = () => {
     const canvas = displayCanvasRef.current;
     const video = videoRef.current;
     if (!canvas || !video || !video.videoWidth || !video.videoHeight) return;
@@ -235,9 +233,9 @@ export function ScreenCapturePanel({
     ctx.strokeStyle = "#f97316";
     ctx.lineWidth = 2;
     ctx.strokeRect(roi.x, roi.y, roi.width, roi.height);
-  }, []);
+  };
 
-  const captureScanFrame = useCallback(() => {
+  const captureScanFrame = () => {
     const video = videoRef.current;
     if (!video || !video.videoWidth || !video.videoHeight) {
       setStatus("캡처할 화면을 찾는 중입니다.");
@@ -322,15 +320,12 @@ export function ScreenCapturePanel({
     session.lastCaptureAt = now;
     setStatus("자동 인식 중입니다...");
     return true;
-  }, [onCaptureReady, setStatus]);
+  };
 
   useEffect(() => {
-    captureSessionRef.current.drawOverlay = drawOverlay;
-  }, [drawOverlay]);
-
-  useEffect(() => {
-    captureSessionRef.current.captureScanFrame = captureScanFrame;
-  }, [captureScanFrame]);
+    drawOverlayRef.current = drawOverlay;
+    captureScanFrameRef.current = captureScanFrame;
+  });
 
   useEffect(() => {
     if (!ui.isSharing) return;
@@ -338,7 +333,7 @@ export function ScreenCapturePanel({
     const session = captureSessionRef.current;
 
     const loop = () => {
-      session.drawOverlay();
+      drawOverlayRef.current();
       session.rafId = requestAnimationFrame(loop);
     };
     session.rafId = requestAnimationFrame(loop);
@@ -347,7 +342,7 @@ export function ScreenCapturePanel({
       if (session.isAutoCaptureBusy) return;
       session.isAutoCaptureBusy = true;
       try {
-        session.captureScanFrame();
+        captureScanFrameRef.current();
       } finally {
         session.isAutoCaptureBusy = false;
       }
@@ -356,9 +351,9 @@ export function ScreenCapturePanel({
     return () => {
       clearLoopTimers();
     };
-  }, [ui.isSharing, clearLoopTimers]);
+  }, [ui.isSharing]);
 
-  const startSharing = useCallback(async () => {
+  const startSharing = async () => {
     try {
       const stream = await navigator.mediaDevices.getDisplayMedia({
         video: true,
@@ -369,13 +364,23 @@ export function ScreenCapturePanel({
       console.error(error);
       setStatus("화면 공유 시작에 실패했습니다.");
     }
-  }, [attachStreamToVideo, setStatus]);
+  };
 
   useEffect(() => {
+    const sessionRef = captureSessionRef;
+    const localVideoRef = videoRef;
+
     return () => {
-      releaseSharingSession();
+      const session = sessionRef.current;
+      session.stream?.getTracks().forEach((track) => track.stop());
+      session.stream = null;
+      clearLoopTimers();
+      const video = localVideoRef.current;
+      if (video) {
+        video.srcObject = null;
+      }
     };
-  }, [releaseSharingSession]);
+  }, []);
 
   return (
     <Card className="hud-panel border-primary/20">

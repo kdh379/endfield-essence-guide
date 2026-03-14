@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import {
   buildZoneOptionSet,
@@ -36,72 +36,45 @@ export default function FarmPage({ initialData }: FarmPageProps) {
     initialData.threatZones[0]?.id ?? "",
   );
 
-  const optionsById = useMemo(
-    () => new Map(initialData.options.map((option) => [option.id, option])),
-    [initialData.options],
+  const optionsById = new Map(
+    initialData.options.map((option) => [option.id, option]),
   );
-  const { baseOptions, subOptions, skillOptions } = useMemo(
-    () => partitionOptions(initialData.options),
-    [initialData.options],
+  const { baseOptions, subOptions, skillOptions } = partitionOptions(
+    initialData.options,
   );
-  const zoneOptionSetByZone = useMemo(
-    () =>
-      new Map(
-        initialData.threatZones.map((zone) => [
-          zone.id,
-          buildZoneOptionSet(zone),
-        ]),
-      ),
-    [initialData.threatZones],
+  const zoneOptionSetByZone = new Map(
+    initialData.threatZones.map((zone) => [zone.id, buildZoneOptionSet(zone)]),
   );
 
-  const selectedWeapon = useMemo(
-    () =>
-      initialData.weapons.find((weapon) => weapon.id === selectedWeaponId) ??
-      initialData.weapons[0],
-    [initialData.weapons, selectedWeaponId],
-  );
-  const selectedZone = useMemo(
-    () =>
-      initialData.threatZones.find((zone) => zone.id === selectedZoneId) ??
-      initialData.threatZones[0],
-    [initialData.threatZones, selectedZoneId],
-  );
-  const selectedTicketOptionIds = useMemo(
-    () =>
-      [
-        ...selectedBaseOptionIds,
-        selectedSubOptionId || null,
-        selectedSkillOptionId || null,
-      ].filter(Boolean) as string[],
-    [selectedBaseOptionIds, selectedSkillOptionId, selectedSubOptionId],
-  );
+  const selectedWeapon =
+    initialData.weapons.find((weapon) => weapon.id === selectedWeaponId) ??
+    initialData.weapons[0];
+  const selectedZone =
+    initialData.threatZones.find((zone) => zone.id === selectedZoneId) ??
+    initialData.threatZones[0];
+  const selectedTicketOptionIds = [
+    ...selectedBaseOptionIds,
+    selectedSubOptionId || null,
+    selectedSkillOptionId || null,
+  ].filter(Boolean) as string[];
 
-  const recommendedFarmingPlans = useMemo(
-    () => getRecommendedFarmingPlans(initialData, selectedWeapon),
-    [initialData, selectedWeapon],
+  const recommendedFarmingPlans = getRecommendedFarmingPlans(
+    initialData,
+    selectedWeapon,
   );
-  const recommendedZones = useMemo(
-    () =>
-      getRecommendedZonesForSelectedOption(
-        initialData.threatZones,
-        selectedTicketOptionIds,
-        zoneOptionSetByZone,
-      ),
-    [initialData.threatZones, selectedTicketOptionIds, zoneOptionSetByZone],
+  const recommendedZones = getRecommendedZonesForSelectedOption(
+    initialData.threatZones,
+    selectedTicketOptionIds,
+    zoneOptionSetByZone,
   );
-  const recommendedWeapons = useMemo(
-    () =>
-      getRecommendedWeaponsForSelectedZone(
-        initialData.weapons,
-        selectedZone,
-        zoneOptionSetByZone,
-      ),
-    [initialData.weapons, selectedZone, zoneOptionSetByZone],
+  const recommendedWeapons = getRecommendedWeaponsForSelectedZone(
+    initialData.weapons,
+    selectedZone,
+    zoneOptionSetByZone,
   );
-  const validWeaponsByZone = useMemo(
-    () => getValidWeaponsByZone(initialData.threatZones, initialData.weapons),
-    [initialData.threatZones, initialData.weapons],
+  const validWeaponsByZone = getValidWeaponsByZone(
+    initialData.threatZones,
+    initialData.weapons,
   );
 
   const toggleBaseOption = (optionId: string) => {
