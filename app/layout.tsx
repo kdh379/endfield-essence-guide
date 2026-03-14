@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Noto_Sans_KR, Orbitron } from "next/font/google";
 
+import { GlobalFooter } from "@/shared/layout/global-footer";
 import { GlobalNav } from "@/shared/layout/global-nav";
 import {
   defaultDescription,
@@ -78,12 +79,13 @@ export default async function RootLayout({
       lang="ko"
       className={`dark ${notoSansKr.variable} ${orbitron.variable} ${geistMono.variable}`}
     >
-      <body className="font-sans antialiased">
+      <body className="flex min-h-screen flex-col font-sans antialiased">
         <GlobalNav
           dataVersion={manifest.dataVersion}
           updatedAt={manifest.updatedAt}
         />
-        {children}
+        <div className="flex-1">{children}</div>
+        <GlobalFooter />
       </body>
     </html>
   );
