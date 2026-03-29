@@ -321,6 +321,17 @@
       }
     },
     {
+      "id": "wpn_6_030",
+      "nameKo": "늑대의 혈흔",
+      "rarity": 6,
+      "iconUrl": "/images/weapons/wpn_6_030.png",
+      "essence": {
+        "base": "opt_base_001",
+        "sub": "opt_sub_011",
+        "skill": "opt_skill_003"
+      }
+    },
+    {
       "id": "wpn_5_001",
       "nameKo": "강철의 여운",
       "rarity": 5,
