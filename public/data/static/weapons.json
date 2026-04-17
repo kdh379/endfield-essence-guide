@@ -1,5 +1,5 @@
 {
-  "dataVersion": "1.1",
+  "dataVersion": "1.2",
   "items": [
     {
       "id": "wpn_6_001",
@@ -329,6 +329,17 @@
         "base": "opt_base_001",
         "sub": "opt_sub_011",
         "skill": "opt_skill_003"
+      }
+    },
+    {
+      "id": "wpn_6_031",
+      "nameKo": "고독한 나룻배",
+      "rarity": 6,
+      "iconUrl": "/images/weapons/wpn_6_031.png",
+      "essence": {
+        "base": "opt_base_002",
+        "sub": "opt_sub_001",
+        "skill": "opt_skill_009"
       }
     },
     {
