@@ -15,7 +15,7 @@ export function WeaponPortrait({ weapon, eyebrow }: WeaponPortraitProps) {
   return (
     <div className="flex items-center gap-3 p-4">
       <div
-        className={`relative h-16 w-16 overflow-hidden rounded-3xl border ${tone.frame}`}
+        className={`relative h-16 w-16 overflow-hidden rounded-lg border ${tone.frame}`}
       >
         {weapon.iconUrl ? (
           <Image

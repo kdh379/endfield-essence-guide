@@ -17,7 +17,7 @@ export function WeaponThumb({ weapon, active, onClick }: WeaponThumbProps) {
     <button
       type="button"
       onClick={onClick}
-      className={`group relative overflow-hidden rounded-[18px] border p-2.5 text-left transition-all duration-200 ${
+      className={`group relative overflow-hidden rounded-lg border p-1 text-left transition-all duration-200 ${
         active
           ? `${tone.card} -translate-y-0.5 ring-1 ring-white/12`
           : "border-white/10 bg-[linear-gradient(160deg,rgba(17,23,32,0.94),rgba(9,13,20,0.94))] hover:-translate-y-0.5 hover:border-white/20 hover:bg-[linear-gradient(160deg,rgba(24,31,42,0.94),rgba(11,16,24,0.94))]"
@@ -25,7 +25,7 @@ export function WeaponThumb({ weapon, active, onClick }: WeaponThumbProps) {
     >
       <div className="relative flex items-center gap-2.5">
         <div
-          className={`relative h-14 w-14 overflow-hidden rounded-3xl border bg-black/20 ${
+          className={`relative size-16 overflow-hidden rounded-lg border bg-black/20 ${
             active ? tone.frame : "border-white/10"
           }`}
         >

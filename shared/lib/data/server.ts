@@ -3,8 +3,6 @@ import "server-only";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { unstable_cache } from "next/cache";
-
 import type {
   DataManifest,
   Option,
@@ -66,12 +64,6 @@ async function readStaticGameDataFile(): Promise<StaticGameData> {
   };
 }
 
-export const getManifest = unstable_cache(
-  async () => readManifestFile(),
-  ["data-manifest"],
-);
+export const getManifest = async () => readManifestFile();
 
-export const getStaticGameData = unstable_cache(
-  async () => readStaticGameDataFile(),
-  ["static-game-data"],
-);
+export const getStaticGameData = async () => readStaticGameDataFile();

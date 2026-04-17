@@ -6,7 +6,6 @@ import { WeaponPortrait } from "@/domain/farming/widgets/weapon-portrait";
 import { WeaponThumb } from "@/domain/farming/widgets/weapon-thumb";
 import type { Option, Weapon } from "@/shared/lib/data/schemas";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { ScrollArea } from "@/shared/ui/scroll-area";
 
 interface WeaponTabContentProps {
   weapons: Weapon[];
@@ -40,18 +39,16 @@ export function WeaponTabContent({
           </p>
         </CardHeader>
         <CardContent className="p-3">
-          <ScrollArea className="h-130 pr-2">
-            <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-4">
-              {weapons.map((weapon) => (
-                <WeaponThumb
-                  key={weapon.id}
-                  weapon={weapon}
-                  active={weapon.id === selectedWeapon?.id}
-                  onClick={() => onSelectWeapon(weapon.id)}
-                />
-              ))}
-            </div>
-          </ScrollArea>
+          <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-4 backdrop-blur">
+            {weapons.map((weapon) => (
+              <WeaponThumb
+                key={weapon.id}
+                weapon={weapon}
+                active={weapon.id === selectedWeapon?.id}
+                onClick={() => onSelectWeapon(weapon.id)}
+              />
+            ))}
+          </div>
         </CardContent>
       </Card>
 
